@@ -1,14 +1,13 @@
+import logging
 import time
 
 import numpy
-
-from utils import get_logger
 
 from .core import Wsn
 
 
 # 日志配置
-logger = get_logger('wsn.utils')
+logger: logging.Logger = logging.getLogger('wsn.utils')
 
 
 def generate_rand_nodes(

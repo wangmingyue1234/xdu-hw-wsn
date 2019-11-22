@@ -1,7 +1,6 @@
+import logging
 import numpy
 import time
-
-from utils import get_logger
 
 from .message import BaseMessage
 
@@ -12,7 +11,7 @@ class WsnMedium(object):
     介质的“物理特性”决定了一个信息将会送达到哪些节点
     """
     # 配置日志
-    logger = get_logger('wsn.medium')
+    logger: logging.Logger = logging.getLogger('wsn.medium')
 
     # wsn: Wsn
 

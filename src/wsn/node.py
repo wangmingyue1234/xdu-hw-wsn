@@ -1,18 +1,17 @@
+import logging
 import threading
 import time
 from enum import Enum
 from typing import List, Tuple, Optional
 
-from utils import get_logger
-
-from .message import BaseMessage, NormalMessage
+from .message import NormalMessage
 
 
 class WsnNode(object):
     """无线传感网络中的一个节点
     """
     # 日志配置
-    logger = get_logger('wsn.node')
+    logger: logging.Logger = logging.getLogger('wsn.node')
 
     class EnumNodeStatus(Enum):
         STOPPED = 0
@@ -69,7 +68,7 @@ class WsnNode(object):
         self.recv_count = 0
 
         self.thread_cnt = 'start'
-        self.thread = threading.Thread(target=self.thread_main)
+        self.thread = threading.Thread(target=self.thread_main, name=f'node-{self.node_id}')
         self.thread.start()
 
         return self.thread.is_alive()
@@ -80,50 +79,50 @@ class WsnNode(object):
         :return: 只要方法执行完节点是处于停止状态，就返回 True 否则返回 False
         """
         if self.thread is None or not self.thread.is_alive():
-            self.logger.warning(f'node.{self.node_id}: 节点已处于停止状态，不能再停止')
+            self.logger.warning(f'node-{self.node_id} 节点已处于停止状态，不能再停止')
             return True
 
         # 设置控制位，通知线程应当停止
         self.thread_cnt = 'stop'
 
         if timeout < 0:
-            self.logger.info(f'node.{self.node_id}: 已通知节点停止，但不等待其停止')
+            self.logger.info(f'node-{self.node_id} 已通知节点停止，但不等待其停止')
             return True
 
         try:
             # 等待线程停止，超时时间 30 秒
-            self.logger.error(f'node.{self.node_id}: 等待线程结束，超时时间 {timeout} 秒')
+            self.logger.error(f'node-{self.node_id} 等待线程结束，超时时间 {timeout} 秒')
             self.thread.join(timeout)
             self.thread = None
         except TimeoutError:
-            self.logger.error(f'node.{self.node_id}: 等待线程结束超时')
+            self.logger.error(f'node-{self.node_id} 等待线程结束超时')
 
         # 判定停止结果
         if self.thread is None or self.thread.is_alive():
-            self.logger.info(f'node.{self.node_id}: 已停止')
+            self.logger.info(f'node-{self.node_id} 已停止')
             return True
         else:
-            self.logger.warning(f'node.{self.node_id}: 停止失败')
+            self.logger.warning(f'node-{self.node_id} 停止失败')
             return False
 
     def echo(self) -> None:
-        self.logger.info(f'node.{self.node_id}: 我还活着！')
+        self.logger.info(f'我还活着！')
 
     def send(self, message: NormalMessage):
         if self.power - self.pc_per_send >= 0:
             self.power -= self.pc_per_send
             self.medium.spread(self, message)
-            self.logger.info(f'node.{self.node_id}.thread: 发送消息 "{message.data}"')
+            self.logger.info(f'发送消息 "{message.data}"')
         else:
             self.stop()
-            self.logger.warning(f'node.{self.node_id}.thread: 电量不足，发送失败，已关机')
+            self.logger.warning(f'电量不足，发送失败，已关机')
 
     def thread_main(self) -> None:
-        self.logger.info(f'node.{self.node_id}.thread: 节点启动')
+        self.logger.info(f'节点启动')
 
         while True:
             if self.thread_cnt == 'stop':
-                self.logger.info(f'node.{self.node_id}.thread: 节点停止')
+                self.logger.info(f'节点停止')
                 break
 
             if self.node_id == 1 or self.recv_count > 0:
@@ -138,7 +137,7 @@ class WsnNode(object):
                     if self.node_id in message.handlers:
                         continue
                     self.recv_count += 1
-                    self.logger.info(f'node.{self.node_id}.thread: 接收到消息 "{message.data}"')
+                    self.logger.info(f'接收到消息 "{message.data}"')
                     # message.handle(self.node_id)
                     # self.medium.spread(self, message)
 
@@ -158,7 +157,7 @@ class WsnNodeManager(object):
     为无线传感网络管理节点的生成和销毁
     """
     # 日志配置
-    logger = get_logger('wsn.node_manager')
+    logger: logging = logging.getLogger('wsn.nm')
 
     nodes: List[WsnNode]
     # wsn: Wsn
@@ -174,7 +173,7 @@ class WsnNodeManager(object):
         new_node = WsnNode(new_node_id, x, y, r, power, pc_per_send, self.wsn.medium)
         self.nodes.append(new_node)
 
-        self.logger.info(f'新增节点 node.{new_node_id} ：({x}, {y}), r={r}, power={power}, pc_per_send={pc_per_send}')
+        self.logger.info(f'新增节点 node-{new_node_id} ({x}, {y}), r={r}, power={power}, pc_per_send={pc_per_send}')
 
         return new_node
 

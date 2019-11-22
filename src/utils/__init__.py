@@ -1,4 +1,3 @@
-from .log import get_logger
+from .log import init_root_logger, get_log_file_dir_path, launch_time
 
-
-__all__ = ['get_logger', ]
+__all__ = ['init_root_logger', 'get_log_file_dir_path', 'launch_time']

@@ -1,14 +1,16 @@
+import logging
 import threading
 import time
 
-from utils import get_logger
+from utils import init_root_logger
 from bystander import Bystander
 from wsn import Wsn
 from wsn.utils import generate_rand_nodes
 
 
-# 日志配置
-logger = get_logger('main')
+# 初始化日志配置
+init_root_logger()
+logger: logging.Logger = logging.getLogger('main')
 
 
 def main():
@@ -51,7 +53,13 @@ def main():
         logger.error('无线传感网停止，部分节点失败')
 
     logger.info('主线程执行完毕，等待所有子线程结束...')
+    logger.info(f'主线程 id {threading.main_thread()}')
+    for thread in threading.enumerate():
+        if thread != threading.currentThread():
+            thread.join()
+    logger.info('主线程结束...')
 
 
 if __name__ == '__main__':
+    threading.main_thread().setName('main')
     main()

@@ -1,14 +1,19 @@
+import logging
+import os
+import shutil
+import sys
 import threading
 import time
 from typing import Optional
 
 import matplotlib
-matplotlib.use('GTK3Agg')
-from matplotlib import pyplot, animation, figure
-# from matplotlib.patches import Circle
+# if sys.platform != 'linux':
+matplotlib.use('Qt5Agg')
 
-from utils import get_logger
+from matplotlib import pyplot, animation
+
 from wsn import Wsn
+from utils import get_log_file_dir_path
 
 
 class Bystander(object):
@@ -16,7 +21,7 @@ class Bystander(object):
     以上帝视角观察无线传感网络，用适当的方法将其可视化
     """
     # 配置日志
-    logger = get_logger('bystander')
+    logger: logging.Logger = logging.getLogger('bystander')
 
     wsn: Wsn
     thread: Optional[threading.Thread]
@@ -36,7 +41,7 @@ class Bystander(object):
             return True
 
         self.thread_cnt = 'start'
-        self.thread = threading.Thread(target=self.thread_main)
+        self.thread = threading.Thread(target=self.thread_main, name='bystander')
         self.thread.start()
 
         return self.thread.is_alive()
@@ -74,7 +79,7 @@ class Bystander(object):
             return False
 
     def thread_main(self):
-        self.logger.info('bystander.thread: 旁观者启动')
+        self.logger.info('旁观者启动')
         last_status = None
         status_log = []
         frame_num = 0
@@ -85,9 +90,9 @@ class Bystander(object):
         while True:
             frame_num += 1
             if self.thread_cnt == 'stop':
-                self.logger.info('bystander.thread: 旁观者停止')
                 pyplot.ioff()
                 self.generate_gif(status_log)
+                self.logger.info('旁观者停止')
                 break
 
             status = []
@@ -127,13 +132,11 @@ class Bystander(object):
             else:
                 time.sleep(0.2)
 
-    @staticmethod
-    def generate_gif(status_log):
-        print(status_log[-1][1])
+    def generate_gif(self, status_log):
+        self.logger.info('正在导出动画...')
         fig, ax = pyplot.subplots()
 
         def init():
-            fig.gca().cla()
             ax.set_aspect(1)
             return []
 
@@ -151,5 +154,14 @@ class Bystander(object):
             return artists
 
         anim = animation.FuncAnimation(fig, update, frames=status_log, init_func=init, blit=True, interval=500)
-        anim.save('hhh.gif', writer='imagemagick')
-        pyplot.show()
+
+        # 保存动画
+        if 'imagemagick' in animation.writers.avail:
+            anim.save(f'{get_log_file_dir_path()}/result.gif', writer='imagemagick')
+        else:
+            self.logger.warning('不支持保存成 gif')
+        os.makedirs(f'{get_log_file_dir_path()}/result/')
+        anim.save(f'index.html', writer='html')
+        shutil.move('index_frames', f'{get_log_file_dir_path()}/result/')
+        shutil.move('index.html', f'{get_log_file_dir_path()}/result/')
+        self.logger.info('动画导出完成...')

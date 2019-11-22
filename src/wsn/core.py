@@ -1,8 +1,7 @@
+import logging
 from functools import reduce
 from operator import and_
 from typing import List
-
-from utils import get_logger
 
 from .node import WsnNodeManager
 from .medium import WsnMedium
@@ -12,7 +11,7 @@ class Wsn(object):
     """无线传感网络
     """
     # 日志配置
-    logger = get_logger('wsn.core')
+    logger: logging.Logger = logging.getLogger('wsn.core')
 
     node_manager: WsnNodeManager
     medium: WsnMedium
