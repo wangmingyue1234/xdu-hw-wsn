@@ -21,7 +21,7 @@ class WsnMedium(object):
 
     def spread(self, source_node, message: BaseMessage) -> None:
         # 设置随机数种子
-        numpy.random.seed(time.time_ns() // 1000000000)
+        numpy.random.seed(int(time.time()))
 
         for target_node in self.wsn.node_manager.nodes:
             # 两节点间距

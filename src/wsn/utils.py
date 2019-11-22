@@ -35,7 +35,7 @@ def generate_rand_nodes(
     node_r_sigma = node_r_sigma if node_r_sigma >= 0. else 0.
 
     # 设置随机数种子
-    numpy.random.seed(time.time_ns() // 1000000000)
+    numpy.random.seed(int(time.time()))
 
     for _ in range(node_num):
         # 通信半径是正态分布的随机值

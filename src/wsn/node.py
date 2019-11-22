@@ -109,6 +109,15 @@ class WsnNode(object):
     def echo(self) -> None:
         self.logger.info(f'node.{self.node_id}: 我还活着！')
 
+    def send(self, message: NormalMessage):
+        if self.power - self.pc_per_send >= 0:
+            self.power -= self.pc_per_send
+            self.medium.spread(self, message)
+            self.logger.info(f'node.{self.node_id}.thread: 发送消息 "{message.data}"')
+        else:
+            self.stop()
+            self.logger.warning(f'node.{self.node_id}.thread: 电量不足，发送失败，已关机')
+
     def thread_main(self) -> None:
         self.logger.info(f'node.{self.node_id}.thread: 节点启动')
 
@@ -117,22 +126,21 @@ class WsnNode(object):
                 self.logger.info(f'node.{self.node_id}.thread: 节点停止')
                 break
 
-            if self.node_id == 1:
+            if self.node_id == 1 or self.recv_count > 0:
                 # 我是消息源，我要发送消息
                 data = 'Hello World!'
-                self.logger.info(f'node.{self.node_id}.thread: 发送消息 "{data}"')
-                self.medium.spread(self, NormalMessage(data, self.node_id))
+                self.send(NormalMessage(data, self.node_id))
             else:
 
-                # 我是其它节点，我要转发消息
+                # 我是其它节点，我要接收消息
                 while self.recv_queue:
                     message = self.recv_queue.pop(0)
                     if self.node_id in message.handlers:
                         continue
                     self.recv_count += 1
-                    # self.logger.info(f'node.{self.node_id}.thread: 接收到消息 "{message.data}"')
-                    message.handle(self.node_id)
-                    self.medium.spread(self, message)
+                    self.logger.info(f'node.{self.node_id}.thread: 接收到消息 "{message.data}"')
+                    # message.handle(self.node_id)
+                    # self.medium.spread(self, message)
 
             time.sleep(0.5)
 
