@@ -25,6 +25,7 @@ class WsnNode(object):
     # 通信参数
     r: float
     power: float
+    total_power: float
     pc_per_send: float
 
     # 节点线程
@@ -43,13 +44,14 @@ class WsnNode(object):
     def __init__(
             self,
             node_id: int, x: float, y: float, r: float,
-            power: float, pc_per_send: float, medium
+            total_power: float, pc_per_send: float, medium
     ) -> None:
         self.node_id = node_id
         self.x = x
         self.y = y
         self.r = r
-        self.power = power
+        self.power = total_power
+        self.total_power = total_power
         self.pc_per_send = pc_per_send
         self.thread = None
         self.thread_cnt = 'stop'
@@ -125,7 +127,7 @@ class WsnNode(object):
                 self.logger.info(f'节点停止')
                 break
 
-            if self.node_id == 1 or self.recv_count > 0:
+            if self.node_id == 1:
                 # 我是消息源，我要发送消息
                 data = 'Hello World!'
                 self.send(NormalMessage(data, self.node_id))
@@ -138,10 +140,10 @@ class WsnNode(object):
                         continue
                     self.recv_count += 1
                     self.logger.info(f'接收到消息 "{message.data}"')
-                    # message.handle(self.node_id)
-                    # self.medium.spread(self, message)
+                    message.handle(self.node_id)
+                    self.medium.spread(self, message)
 
-            time.sleep(0.5)
+            time.sleep(5)
 
     @property
     def xy(self) -> Tuple[float, float]:

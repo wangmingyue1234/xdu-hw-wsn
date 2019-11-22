@@ -17,7 +17,7 @@ def main():
     logger.info('正在生成无线传感网络...')
     wsn = generate_rand_nodes(
         wsn=Wsn(), wsn_width_x=100, wsn_width_y=100,
-        node_num=200, node_r_mu=10, node_r_sigma=5, node_power=100, node_pc_per_send=5
+        node_num=300, node_r_mu=10, node_r_sigma=3, node_power=100, node_pc_per_send=5
     )
     logger.info('无线传感网络生成完成')
 
@@ -38,7 +38,7 @@ def main():
         logger.error('无线传感网启动，部分节点失败')
         exit(-1)
 
-    time.sleep(30)
+    time.sleep(300)
 
     logger.info('正在停止旁观者..')
     if bystander.stop():
@@ -53,7 +53,6 @@ def main():
         logger.error('无线传感网停止，部分节点失败')
 
     logger.info('主线程执行完毕，等待所有子线程结束...')
-    logger.info(f'主线程 id {threading.main_thread()}')
     for thread in threading.enumerate():
         if thread != threading.currentThread():
             thread.join()

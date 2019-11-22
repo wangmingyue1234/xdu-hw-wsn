@@ -4,7 +4,7 @@ import shutil
 import sys
 import threading
 import time
-from typing import Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import matplotlib
 # if sys.platform != 'linux':
@@ -12,7 +12,7 @@ matplotlib.use('Qt5Agg')
 
 from matplotlib import pyplot, animation
 
-from wsn import Wsn
+from wsn import Wsn, WsnNode
 from utils import get_log_file_dir_path
 
 
@@ -26,11 +26,13 @@ class Bystander(object):
     wsn: Wsn
     thread: Optional[threading.Thread]
     thread_cnt: str
+    frames_log: List[List[Dict[str, Any]]]
 
     def __init__(self, wsn: Wsn):
         self.wsn = wsn
         self.thread = None
         self.thread_cnt = 'stop'
+        self.frames_log = []
 
     def start(self) -> bool:
         """开始旁观
@@ -80,88 +82,128 @@ class Bystander(object):
 
     def thread_main(self):
         self.logger.info('旁观者启动')
-        last_status = None
-        status_log = []
-        frame_num = 0
 
-        pyplot.ion()
+        last_status = None
         fig, ax = pyplot.subplots()
+        ax.set_aspect(1)
+
+        # 开启交互模式
+        pyplot.ion()
 
         while True:
-            frame_num += 1
             if self.thread_cnt == 'stop':
+                pyplot.close(fig)
+                # 关闭交互模式
                 pyplot.ioff()
-                self.generate_gif(status_log)
+
+                self.generate_gif()
+
                 self.logger.info('旁观者停止')
                 break
 
             status = []
 
             for node in self.wsn.node_manager.nodes:
-                if node.node_id == 1:
-                    status.append((node.node_id, node.xy, node.r, node.power, 'source', 'red'))
-                    continue
-                if not node.is_alive:
-                    status.append((node.node_id, node.xy, node.r, node.power, 'dead', 'black'))
-                    continue
-                if node.recv_count > 0:
-                    status.append((node.node_id, node.xy, node.r, node.power, 'received', 'blue'))
-                    continue
-                status.append((node.node_id, node.xy, node.r, node.power, 'alive', 'green'))
+                status.append(self.extract_node_info(node))
 
             if status != last_status:
-                status_log.append((status, frame_num))
                 # 网络发生变化，画图
+                self.frames_log.append(status)
                 self.logger.info('更新图像')
-                pyplot.cla()
+                self.flush_figure(fig)
 
-                pyplot.title('WSN')
-                pyplot.xlabel('x')
-                pyplot.ylabel('y')
-                ax.set_aspect(1)
+                for node_info in status:
+                    self.draw_node(ax, node_info)
 
-                for node in status:
-                    ax.plot(node[1][0], node[1][1], '.', color=node[5])
-                    cir = pyplot.Circle(xy=node[1], radius=node[2], alpha=node[3] / 1000, color=node[5])
-                    ax.add_artist(cir)
-
-                # pyplot.legend(loc='upper right')
-                pyplot.draw()
+                # fig.gca().legend(loc='upper right')
                 last_status = status
                 pyplot.pause(0.2)
             else:
                 time.sleep(0.2)
 
-    def generate_gif(self, status_log):
-        self.logger.info('正在导出动画...')
+    def generate_gif(self):
+        self.logger.info('正在生成动画...')
         fig, ax = pyplot.subplots()
 
         def init():
             ax.set_aspect(1)
             return []
 
-        def update(frame_num):
-            fig.gca().cla()
-            artists = []
-            frame = frame_num[0]
+        def update(frame: int) -> List[pyplot.Artist]:
+            self.flush_figure(fig)
 
-            for node in frame:
-                artists.extend(ax.plot(node[1][0], node[1][1], '.', color=node[5]))
-                cir = pyplot.Circle(xy=node[1], radius=node[2], alpha=node[3] / 1000, color=node[5])
-                ax.add_artist(cir)
-                if cir:
-                    artists.append(cir)
+            artists = []
+
+            for node_info in self.frames_log[frame]:
+                artists.extend(self.draw_node(ax, node_info))
+
             return artists
 
-        anim = animation.FuncAnimation(fig, update, frames=status_log, init_func=init, blit=True, interval=500)
+        anim = animation.FuncAnimation(fig, update, frames=len(self.frames_log), init_func=init, blit=True, interval=500)
 
         # 保存动画
         if 'imagemagick' in animation.writers.avail:
+            self.logger.info('正在将动画导出到 result.gif')
             anim.save(f'{get_log_file_dir_path()}/result.gif', writer='imagemagick')
         else:
             self.logger.warning('不支持保存成 gif')
+
         os.makedirs(f'{get_log_file_dir_path()}/result/')
+        self.logger.info('正在将动画导出到 result/index.html')
         anim.save(f'index.html', writer='html')
         shutil.move('index_frames', f'{get_log_file_dir_path()}/result/')
         shutil.move('index.html', f'{get_log_file_dir_path()}/result/')
+        anim.to_jshtml()
+
+        pyplot.close(fig)
         self.logger.info('动画导出完成...')
+
+    @staticmethod
+    def flush_figure(fig) -> None:
+        fig.gca().cla()
+        fig.gca().set_title('WSN')
+        fig.gca().set_xlabel('x')
+        fig.gca().set_ylabel('y')
+
+    @staticmethod
+    def extract_node_info(node: WsnNode) -> Dict[str, Any]:
+        node_info = {
+            'node_id': node.node_id,
+            'xy': node.xy,
+            'r': node.r,
+            'power': node.power,
+            'total_power': node.total_power,
+            'label': '',
+            'color': ''
+        }
+
+        if node.node_id == 1:
+            node_info['label'] = 'source'
+            node_info['color'] = 'red'
+        elif not node.is_alive:
+            node_info['label'] = 'dead'
+            node_info['color'] = 'black'
+        elif node.recv_count > 0:
+            node_info['label'] = 'received'
+            node_info['color'] = 'blue'
+        else:
+            node_info['label'] = 'alive'
+            node_info['color'] = 'green'
+
+        return node_info
+
+    @staticmethod
+    def draw_node(ax: pyplot.Axes, node_info: Dict[str, Any]) -> List[pyplot.Artist]:
+        artists = []
+
+        artists.extend(ax.plot(node_info['xy'][0], node_info['xy'][1], '.', color=node_info['color']))
+        cir = pyplot.Circle(
+            xy=node_info['xy'],
+            radius=node_info['r'],
+            alpha=node_info['power'] / node_info['total_power'] * 0.1,
+            color=node_info['color']
+        )
+        ax.add_artist(cir)
+        artists.append(cir)
+
+        return artists
