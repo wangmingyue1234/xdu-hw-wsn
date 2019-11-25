@@ -81,6 +81,8 @@ class Bystander(object):
             return False
 
     def thread_main(self):
+        """旁观者线程的主函数
+        """
         self.logger.info('旁观者启动')
 
         last_status = None
@@ -96,7 +98,7 @@ class Bystander(object):
                 # 关闭交互模式
                 pyplot.ioff()
 
-                self.generate_gif()
+                self.generate_anim()
 
                 self.logger.info('旁观者停止')
                 break
@@ -121,7 +123,10 @@ class Bystander(object):
             else:
                 time.sleep(0.2)
 
-    def generate_gif(self):
+    def generate_anim(self):
+        """生成动画
+        生成动画并且保存成 gif 和 html
+        """
         self.logger.info('正在生成动画...')
         fig, ax = pyplot.subplots()
 
@@ -160,6 +165,8 @@ class Bystander(object):
 
     @staticmethod
     def flush_figure(fig) -> None:
+        """清空一个画布
+        """
         fig.gca().cla()
         fig.gca().set_title('WSN')
         fig.gca().set_xlabel('x')
@@ -167,6 +174,8 @@ class Bystander(object):
 
     @staticmethod
     def extract_node_info(node: WsnNode) -> Dict[str, Any]:
+        """从一个节点提取出与画出节点有关的信息
+        """
         node_info = {
             'node_id': node.node_id,
             'xy': node.xy,
@@ -194,6 +203,8 @@ class Bystander(object):
 
     @staticmethod
     def draw_node(ax: pyplot.Axes, node_info: Dict[str, Any]) -> List[pyplot.Artist]:
+        """根据一个节点的信息画出一个节点
+        """
         artists = []
 
         artists.extend(ax.plot(node_info['xy'][0], node_info['xy'][1], '.', color=node_info['color']))
