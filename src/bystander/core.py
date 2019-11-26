@@ -11,6 +11,8 @@ import matplotlib
 matplotlib.use('Qt5Agg')
 
 from matplotlib import pyplot, animation
+from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
 
 from wsn import Wsn, WsnNode
 from utils import get_log_file_dir_path
@@ -27,6 +29,10 @@ class Bystander(object):
     thread: Optional[threading.Thread]
     thread_cnt: str
     frames_log: List[List[Dict[str, Any]]]
+
+    last_status: Optional[List[Dict[str, Any]]]
+    fig: pyplot.Figure
+    ax: pyplot.Axes
 
     def __init__(self, wsn: Wsn):
         self.wsn = wsn
@@ -84,44 +90,45 @@ class Bystander(object):
         """旁观者线程的主函数
         """
         self.logger.info('旁观者启动')
+        self.thread_init()
 
-        last_status = None
-        fig, ax = pyplot.subplots()
-        ax.set_aspect(1)
+        while True:
+            if self.thread_cnt == 'stop':
+                self.thread_close()
+                self.logger.info('旁观者停止')
+                break
+
+            self.action()
+            time.sleep(0.2)
+
+    def thread_init(self):
+        self.last_status = None
+        self.fig, self.ax = pyplot.subplots()
+        self.ax.set_aspect('equal')
 
         # 开启交互模式
         pyplot.ion()
 
-        while True:
-            if self.thread_cnt == 'stop':
-                pyplot.close(fig)
-                # 关闭交互模式
-                pyplot.ioff()
+    def thread_close(self):
+        pyplot.close(self.fig)
+        # 关闭交互模式
+        pyplot.ioff()
 
-                self.generate_anim()
+        self.generate_anim()
 
-                self.logger.info('旁观者停止')
-                break
+    def action(self):
+        status = []
+        for node in self.wsn.node_manager.nodes:
+            status.append(self.extract_node_info(node))
 
-            status = []
+        if status != self.last_status:
+            # 网络发生变化，画图
+            self.frames_log.append(status)
+            self.logger.info('更新图像')
+            self.draw_nodes(self.fig, self.ax, status)
 
-            for node in self.wsn.node_manager.nodes:
-                status.append(self.extract_node_info(node))
-
-            if status != last_status:
-                # 网络发生变化，画图
-                self.frames_log.append(status)
-                self.logger.info('更新图像')
-                self.flush_figure(fig)
-
-                for node_info in status:
-                    self.draw_node(ax, node_info)
-
-                # fig.gca().legend(loc='upper right')
-                last_status = status
-                pyplot.pause(0.2)
-            else:
-                time.sleep(0.2)
+            self.last_status = status
+            pyplot.pause(0.001)
 
     def generate_anim(self):
         """生成动画
@@ -135,7 +142,7 @@ class Bystander(object):
             return []
 
         def update(frame: int) -> List[pyplot.Artist]:
-            self.flush_figure(fig)
+            self.reset_figure(fig, ax)
 
             artists = []
 
@@ -163,17 +170,13 @@ class Bystander(object):
         pyplot.close(fig)
         self.logger.info('动画导出完成...')
 
-    @staticmethod
-    def flush_figure(fig) -> None:
-        """清空一个画布
-        """
-        fig.gca().cla()
-        fig.gca().set_title('WSN')
-        fig.gca().set_xlabel('x')
-        fig.gca().set_ylabel('y')
+    def draw_nodes(self, fig: pyplot.Figure, ax: pyplot.Axes, nodes_info: List[Dict[str, Any]]) -> None:
+        self.reset_figure(fig, ax)
 
-    @staticmethod
-    def extract_node_info(node: WsnNode) -> Dict[str, Any]:
+        for node_info in nodes_info:
+            self.draw_node(ax, node_info)
+
+    def extract_node_info(self, node: WsnNode) -> Dict[str, Any]:
         """从一个节点提取出与画出节点有关的信息
         """
         node_info = {
@@ -186,12 +189,15 @@ class Bystander(object):
             'color': ''
         }
 
-        if node.node_id == 1:
+        if node.node_id == 1 and node.sending is not None:
             node_info['label'] = 'source'
             node_info['color'] = 'red'
         elif not node.is_alive:
             node_info['label'] = 'dead'
             node_info['color'] = 'black'
+        elif node.node_id in self.wsn.node_manager.nodes[0].replied_nodes:
+            node_info['label'] = 'replied'
+            node_info['color'] = 'orange'
         elif node.recv_count > 0:
             node_info['label'] = 'received'
             node_info['color'] = 'blue'
@@ -202,19 +208,44 @@ class Bystander(object):
         return node_info
 
     @staticmethod
+    def reset_figure(fig: pyplot.Figure, ax: pyplot.Axes) -> None:
+        """清空并重置一个画布
+        """
+        fig.gca().cla()
+        fig.gca().set_title('Wireless Sensor Networks')
+        fig.gca().set_xlabel('x')
+        fig.gca().set_ylabel('y')
+        fig.set_size_inches(8, 6)
+        ax.set_position((0.1, 0.11, 0.6, 0.8))
+
+        legend_elements = (
+            pyplot.Line2D(xdata=[], ydata=[], marker='.', linewidth=0, color='red', label='source'),
+            pyplot.Line2D(xdata=[], ydata=[], marker='.', linewidth=0, color='green', label='alive'),
+            pyplot.Line2D(xdata=[], ydata=[], marker='.', linewidth=0, color='blue', label='received'),
+            pyplot.Line2D(xdata=[], ydata=[], marker='.', linewidth=0, color='orange', label='replied'),
+            pyplot.Line2D(xdata=[], ydata=[], marker='.', linewidth=0, color='black', label='dead'),
+            pyplot.Circle(xy=(0, 0), radius=0, alpha=0.4, color='red', label='range of signal\n(source node)'),
+            pyplot.Circle(xy=(0, 0), radius=0, alpha=0.4, color='green', label='range of signal\n(alive node)'),
+            pyplot.Circle(xy=(0, 0), radius=0, alpha=0.4, color='blue', label='range of signal\n(received node)'),
+            pyplot.Circle(xy=(0, 0), radius=0, alpha=0.4, color='orange', label='range of signal\n(replied node)'),
+        )
+        ax.legend(handles=legend_elements, loc='upper left', bbox_to_anchor=(1.02, 1), borderaxespad=0)
+
+    @staticmethod
     def draw_node(ax: pyplot.Axes, node_info: Dict[str, Any]) -> List[pyplot.Artist]:
         """根据一个节点的信息画出一个节点
         """
         artists = []
 
         artists.extend(ax.plot(node_info['xy'][0], node_info['xy'][1], '.', color=node_info['color']))
-        cir = pyplot.Circle(
-            xy=node_info['xy'],
-            radius=node_info['r'],
-            alpha=node_info['power'] / node_info['total_power'] * 0.1,
-            color=node_info['color']
-        )
-        ax.add_artist(cir)
-        artists.append(cir)
+        if node_info['label'] in ('source', 'replied', 'received', 'alive'):
+            cir = pyplot.Circle(
+                xy=node_info['xy'],
+                radius=node_info['r'],
+                alpha=node_info['power'] / node_info['total_power'] * 0.1,
+                color=node_info['color']
+            )
+            ax.add_artist(cir)
+            artists.append(cir)
 
         return artists

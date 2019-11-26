@@ -2,7 +2,9 @@ import logging
 import threading
 import time
 from enum import Enum
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Set
+
+from utils import main_thread_wakeup
 
 from .message import NormalMessage
 
@@ -34,12 +36,16 @@ class WsnNode(object):
     # 节点线程的控制位
     thread_cnt: str
 
-    # 接收消息队列
+    # 收发消息相关
     recv_queue: List[NormalMessage]
+    send_queue: List[str]
     recv_count: int
+    replied_nodes: Set[int]
+    sending: Optional[NormalMessage]
+    teammate_num: int = 0
 
-    # 用于发送信息的介质
-    # medium: WsnMedium
+    # 是否多线程模式
+    multithreading: bool = True
 
     def __init__(
             self,
@@ -56,7 +62,10 @@ class WsnNode(object):
         self.thread = None
         self.thread_cnt = 'stop'
         self.recv_queue = []
+        self.send_queue = []
         self.recv_count = 0
+        self.replied_nodes = set()
+        self.sending = None
         self.medium = medium
 
     def start(self) -> bool:
@@ -111,39 +120,71 @@ class WsnNode(object):
         self.logger.info(f'我还活着！')
 
     def send(self, message: NormalMessage):
+        node_tag = ("node-" + str(self.node_id) + ": ") if not self.multithreading else ""
+
         if self.power - self.pc_per_send >= 0:
             self.power -= self.pc_per_send
             self.medium.spread(self, message)
-            self.logger.info(f'发送消息 "{message.data}"')
+            self.logger.info(f'{node_tag}发送消息 "{message.data}"')
         else:
             self.stop()
-            self.logger.warning(f'电量不足，发送失败，已关机')
+            self.logger.warning(f'{node_tag}电量不足，发送失败，已关机')
 
     def thread_main(self) -> None:
         self.logger.info(f'节点启动')
-
         while True:
             if self.thread_cnt == 'stop':
                 self.logger.info(f'节点停止')
                 break
-
-            if self.node_id == 1:
-                # 我是消息源，我要发送消息
-                data = 'Hello World!'
-                self.send(NormalMessage(data, self.node_id))
-            else:
-
-                # 我是其它节点，我要接收消息
-                while self.recv_queue:
-                    message = self.recv_queue.pop(0)
-                    if self.node_id in message.handlers:
-                        continue
-                    self.recv_count += 1
-                    self.logger.info(f'接收到消息 "{message.data}"')
-                    message.handle(self.node_id)
-                    self.medium.spread(self, message)
-
+            self.action()
             time.sleep(5)
+
+    def action(self) -> Optional[bool]:
+        """节点一次活动
+        在多线程模式时，该函数每隔一段休眠时间运行一次
+        在单线程模式，由调度器调度运行
+        """
+        node_tag = ("node-" + str(self.node_id) + ": ") if not self.multithreading else ""
+
+        # 如果一条消息已经被全部确认，则该条消息发送完毕
+        if self.sending is not None and len(self.replied_nodes) >= self.teammate_num:
+            self.sending = None
+            self.replied_nodes = set()
+            # 唤醒主线程
+            if self.multithreading:
+                self.logger.info(f'唤起主线程')
+                main_thread_wakeup.set()
+            else:
+                return True
+
+        # 如果发送队列里有消息需要发送，且当前没有别的消息需要发送，则从发送队列取出一条消息进行发送
+        if self.send_queue and self.sending is None:
+            message = self.send_queue.pop(0)
+            self.sending = NormalMessage(data=message, source=self.node_id)
+
+        # 如果当前有正在发送的消息则发送之
+        if self.sending is not None:
+            self.send(NormalMessage(uuid=self.sending.uuid, data=self.sending.data, source=self.node_id))
+
+        # 处理收到的各种消息
+        while self.recv_queue:
+            message = self.recv_queue.pop(0)
+            # 自己发送的或者处理过的消息丢弃
+            if self.node_id in message.handlers:
+                if self.sending is not None and message.uuid == self.sending.uuid and message.is_reply:
+                    self.replied_nodes.add(message.handlers[0])
+                continue
+
+            self.recv_count += 1
+            self.logger.info(f'{node_tag}接收到消息 "{message.data}"')
+
+            # 给消息注册上自己名字，转发之
+            message.register(self.node_id)
+            self.send(message)
+
+            # 如果消息不是一个回应，则同时发送一条对该消息的回应
+            if not message.is_reply:
+                self.send(NormalMessage(uuid=message.uuid, is_reply=True, data=message.data, source=self.node_id))
 
     @property
     def xy(self) -> Tuple[float, float]:
@@ -151,7 +192,7 @@ class WsnNode(object):
 
     @property
     def is_alive(self):
-        return self.thread is not None and self.thread.is_alive()
+        return not self.multithreading or (self.thread is not None and self.thread.is_alive())
 
 
 class WsnNodeManager(object):

@@ -3,6 +3,7 @@ import time
 
 import numpy
 
+from bystander import Bystander
 from .core import Wsn
 
 
@@ -48,3 +49,20 @@ def generate_rand_nodes(
         wsn.node_manager.add_node(x, y, r, node_power, node_pc_per_send)
 
     return wsn
+
+
+def schedule(bystander: Bystander):
+    finish = False
+    wsn = bystander.wsn
+    nodes = wsn.node_manager.nodes
+
+    for node in nodes:
+        node.multithreading = False
+
+    bystander.thread_init()
+    while not finish:
+        for node in numpy.random.permutation(nodes):
+            if node.action():
+                finish = True
+        bystander.action()
+    bystander.thread_close()
