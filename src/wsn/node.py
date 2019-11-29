@@ -43,6 +43,7 @@ class WsnNode(object):
     replied_nodes: Set[int]
     sending: Optional[NormalMessage]
     teammate_num: int = 0
+    partners: List[str]
 
     # 是否多线程模式
     multithreading: bool = True
@@ -185,6 +186,13 @@ class WsnNode(object):
             # 如果消息不是一个回应，则同时发送一条对该消息的回应
             if not message.is_reply:
                 self.send(NormalMessage(uuid=message.uuid, is_reply=True, data=message.data, source=self.node_id))
+
+    def action2(self) -> Optional[bool]:
+        """节点一次活动（方案二）
+        在多线程模式时，该函数每隔一段休眠时间运行一次
+        在单线程模式，由调度器调度运行
+        """
+
 
     @property
     def xy(self) -> Tuple[float, float]:

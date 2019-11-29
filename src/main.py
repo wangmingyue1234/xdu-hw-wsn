@@ -80,4 +80,4 @@ def main(multithreading: bool = True):
 
 if __name__ == '__main__':
     threading.main_thread().setName('main')
-    main()
+    main(False)
