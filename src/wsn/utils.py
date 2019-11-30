@@ -38,9 +38,8 @@ def generate_rand_nodes(
     numpy.random.seed(int(time.time()))
 
     for _ in range(node_num):
-        # 通信半径是正态分布的随机值
-        r = numpy.random.normal(node_r_mu, node_r_sigma)
-        r = r if r >= 0. else 0.
+        # 通信半径是正态分布的随机值（的绝对值）
+        r = abs(numpy.random.normal(node_r_mu, node_r_sigma))
 
         # 坐标是平均分布的随机值
         x = numpy.random.uniform(0, wsn_width_x)
