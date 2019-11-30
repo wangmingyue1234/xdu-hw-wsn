@@ -35,7 +35,7 @@ def generate_rand_nodes(
     node_r_sigma = node_r_sigma if node_r_sigma >= 0. else 0.
 
     # 设置随机数种子
-    numpy.random.seed(int(time.time()))
+    numpy.random.seed(64540)
 
     for _ in range(node_num):
         # 通信半径是正态分布的随机值（的绝对值）
@@ -55,6 +55,9 @@ def schedule(bystander: Bystander):
     wsn = bystander.wsn
     nodes = wsn.node_manager.nodes
 
+    # 设置随机数种子
+    numpy.random.seed(int(time.time()))
+
     for node in nodes:
         node.multithreading = False
 
@@ -64,4 +67,11 @@ def schedule(bystander: Bystander):
             if node.action():
                 finish = True
         bystander.action()
+
+        sending_count = 0
+        for node in nodes:
+            if node.sending or node.send_queue or node.recv_queue:
+                sending_count += 1
+        if sending_count >= 288:
+            finish = True
     bystander.thread_close()

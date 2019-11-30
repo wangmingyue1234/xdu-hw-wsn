@@ -13,12 +13,12 @@ logger: logging.Logger = logging.getLogger('main')
 
 
 def main(multithreading: bool = True):
-    node_num = 100
+    node_num = 300
 
     logger.info('正在生成无线传感网络...')
     wsn = generate_rand_nodes(
         wsn=Wsn(), wsn_width_x=100, wsn_width_y=100,
-        node_num=node_num, node_r_mu=20, node_r_sigma=5, node_power=100000, node_pc_per_send=1
+        node_num=node_num, node_r_mu=10, node_r_sigma=5, node_power=100000, node_pc_per_send=1
     )
     logger.info('无线传感网络生成完成')
 

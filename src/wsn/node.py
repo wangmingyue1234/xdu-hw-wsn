@@ -2,7 +2,7 @@ import logging
 import threading
 import time
 from enum import Enum
-from typing import List, Tuple, Optional, Set
+from typing import Any, Callable, List, Tuple, Optional, Set
 
 from utils import main_thread_wakeup
 
@@ -38,12 +38,13 @@ class WsnNode(object):
 
     # 收发消息相关
     recv_queue: List[NormalMessage]
-    send_queue: List[str]
+    send_queue: List[str or NormalMessage]
     recv_count: int
-    replied_nodes: Set[int]
+    replied_nodes: Set[int or str]
     sending: Optional[NormalMessage]
     teammate_num: int = 0
     partners: List[str]
+    action: Callable[..., Any]
 
     # 是否多线程模式
     multithreading: bool = True
@@ -68,6 +69,7 @@ class WsnNode(object):
         self.replied_nodes = set()
         self.sending = None
         self.medium = medium
+        self.action = self.action0
 
     def start(self) -> bool:
         """启动节点
@@ -140,7 +142,35 @@ class WsnNode(object):
             self.action()
             time.sleep(5)
 
-    def action(self) -> Optional[bool]:
+    def action0(self):
+        """无限复读广播
+        """
+        node_tag = ("node-" + str(self.node_id) + ": ") if not self.multithreading else ""
+
+        # 如果发送队列里有消息需要发送，且当前没有别的消息需要发送，则从发送队列取出一条消息进行发送
+        if self.send_queue and self.sending is None:
+            message = self.send_queue.pop(0)
+            if isinstance(message, str):
+                self.sending = NormalMessage(data=message, source=self.node_id)
+            elif isinstance(message, NormalMessage):
+                self.sending = message
+
+        # 如果当前有正在发送的消息则发送之
+        if self.sending is not None:
+            self.send(NormalMessage(uuid=self.sending.uuid, data=self.sending.data, source=self.node_id))
+
+        # 处理收到的各种消息
+        while self.recv_queue:
+            message = self.recv_queue.pop(0)
+            if message.uuid == self.sending:
+                continue
+
+            self.recv_count += 1
+            self.logger.info(f'{node_tag}接收到消息 "{message.data}"')
+
+            self.sending = message
+
+    def action1(self) -> Optional[bool]:
         """节点一次活动
         在多线程模式时，该函数每隔一段休眠时间运行一次
         在单线程模式，由调度器调度运行
@@ -161,7 +191,10 @@ class WsnNode(object):
         # 如果发送队列里有消息需要发送，且当前没有别的消息需要发送，则从发送队列取出一条消息进行发送
         if self.send_queue and self.sending is None:
             message = self.send_queue.pop(0)
-            self.sending = NormalMessage(data=message, source=self.node_id)
+            if isinstance(message, str):
+                self.sending = NormalMessage(data=message, source=self.node_id)
+            elif isinstance(message, NormalMessage):
+                self.sending = message
 
         # 如果当前有正在发送的消息则发送之
         if self.sending is not None:
@@ -187,12 +220,40 @@ class WsnNode(object):
             if not message.is_reply:
                 self.send(NormalMessage(uuid=message.uuid, is_reply=True, data=message.data, source=self.node_id))
 
-    def action2(self) -> Optional[bool]:
+    def action2(self):
         """节点一次活动（方案二）
         在多线程模式时，该函数每隔一段休眠时间运行一次
         在单线程模式，由调度器调度运行
         """
+        node_tag = ("node-" + str(self.node_id) + ": ") if not self.multithreading else ""
 
+        # 如果发送队列里有消息需要发送，且当前没有别的消息需要发送，则从发送队列取出一条消息进行发送
+        if self.send_queue and self.sending is None:
+            message = self.send_queue.pop(0)
+            if isinstance(message, str):
+                self.sending = NormalMessage(data=message, source=self.node_id)
+            elif isinstance(message, NormalMessage):
+                self.sending = message
+            self.replied_nodes.add(self.sending.uuid)
+
+        # 如果当前有正在发送的消息则发送之
+        if self.sending is not None:
+            for _ in range(100):
+                self.send(self.sending)
+            self.sending = None
+
+        # 处理收到的各种消息
+        while self.recv_queue:
+            message = self.recv_queue.pop(0)
+            # 自己发送的或者处理过的消息丢弃
+            if message.uuid in self.replied_nodes:
+                continue
+
+            self.recv_count += 1
+            self.replied_nodes.add(message.uuid)
+            self.logger.info(f'{node_tag}接收到消息 "{message.data}"')
+
+            self.send_queue.append(message)
 
     @property
     def xy(self) -> Tuple[float, float]:
