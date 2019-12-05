@@ -14,6 +14,9 @@ class BaseMessage(object):
         """
         self.data = data
 
+    def copy(self):
+        return BaseMessage(self.data)
+
 
 class RegisteredMessage(BaseMessage):
     """记名消息
@@ -34,6 +37,11 @@ class RegisteredMessage(BaseMessage):
         :param node_id: 经手人的 node_id
         """
         self.handlers.append(node_id)
+
+    def copy(self):
+        new_message = RegisteredMessage(self.data)
+        new_message.handlers = self.handlers.copy
+        return new_message
 
     @property
     def source(self):
@@ -57,3 +65,8 @@ class NormalMessage(RegisteredMessage):
         super(NormalMessage, self).__init__(data, source)
         self.uuid = str(UUID(uuid)) if uuid else str(uuid4())
         self.is_reply = is_reply
+
+    def copy(self):
+        new_message = NormalMessage(self.uuid, self.is_reply, self.data)
+        new_message.handlers = self.handlers.copy()
+        return new_message

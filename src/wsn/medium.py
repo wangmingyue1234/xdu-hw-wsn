@@ -43,7 +43,7 @@ class WsnMedium(object):
             # 上帝掷骰子
             if numpy.random.choice((True, False), p=(p, 1 - p)):
                 # 信息传输成功
-                target_node.recv_queue.append(message)
+                target_node.recv_queue.append(message.copy())
             else:
                 # 信息传输失败
                 continue

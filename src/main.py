@@ -41,7 +41,7 @@ def main(multithreading: bool = True):
             exit(-1)
 
     # 给一号节点注入灵魂
-    wsn.node_manager.nodes[0].teammate_num = node_num * 0.9
+    wsn.node_manager.nodes[0].teammate_num = node_num * 0.8
     wsn.node_manager.nodes[0].send_queue.append('Hello World!')
 
     if multithreading:
@@ -74,7 +74,7 @@ def main(multithreading: bool = True):
     power_usage = 0
     for node in wsn.node_manager.nodes:
         power_usage += (node.total_power - node.power)
-    logger.info(f'本次传输总耗电量 {power_usage} 点')
+    logger.warning(f'本次传输总耗电量 {power_usage} 点')
     logger.info('主线程结束...')
 
 

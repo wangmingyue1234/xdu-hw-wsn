@@ -186,7 +186,10 @@ class Bystander(object):
             'power': node.power,
             'total_power': node.total_power,
             'label': '',
-            'color': ''
+            'color': '',
+            'last_node':
+                self.wsn.node_manager.nodes[int(max(node.route_len['1'].items(), key=lambda x: x[1])[0])-1].xy
+                if node.route_len.get('1') else None
         }
 
         # if node.node_id == 1 and node.sending is not None:
@@ -197,10 +200,10 @@ class Bystander(object):
         #     node_info['color'] = 'black'
         # elif node.node_id in self.wsn.node_manager.nodes[0].replied_nodes:
         #     node_info['label'] = 'replied'
-        #     node_info['color'] = 'orange'
+        #     node_info['color'] = 'yellow'
         # elif node.recv_count > 0:
         #     node_info['label'] = 'received'
-        #     node_info['color'] = 'blue'
+        #     node_info['color'] = 'orange'
         # else:
         #     node_info['label'] = 'alive'
         #     node_info['color'] = 'green'
@@ -214,6 +217,9 @@ class Bystander(object):
         elif node.sending or node.send_queue:
             node_info['label'] = 'sending'
             node_info['color'] = 'blue'
+        elif node.node_id in self.wsn.node_manager.nodes[0].replied_nodes:
+            node_info['label'] = 'replied'
+            node_info['color'] = 'yellow'
         elif node.recv_count > 0:
             node_info['label'] = 'received'
             node_info['color'] = 'orange'
@@ -237,12 +243,14 @@ class Bystander(object):
         legend_elements = (
             pyplot.Line2D(xdata=[], ydata=[], marker='.', linewidth=0, color='red', label='source'),
             pyplot.Line2D(xdata=[], ydata=[], marker='.', linewidth=0, color='green', label='alive'),
-            pyplot.Line2D(xdata=[], ydata=[], marker='.', linewidth=0, color='blue', label='received'),
-            pyplot.Line2D(xdata=[], ydata=[], marker='.', linewidth=0, color='orange', label='sending'),
+            pyplot.Line2D(xdata=[], ydata=[], marker='.', linewidth=0, color='orange', label='received'),
+            pyplot.Line2D(xdata=[], ydata=[], marker='.', linewidth=0, color='yellow', label='replied'),
+            pyplot.Line2D(xdata=[], ydata=[], marker='.', linewidth=0, color='blue', label='sending'),
             pyplot.Line2D(xdata=[], ydata=[], marker='.', linewidth=0, color='black', label='dead'),
             pyplot.Circle(xy=(0, 0), radius=0, alpha=0.4, color='red', label='range of signal\n(source node)'),
             pyplot.Circle(xy=(0, 0), radius=0, alpha=0.4, color='green', label='range of signal\n(alive node)'),
             pyplot.Circle(xy=(0, 0), radius=0, alpha=0.4, color='orange', label='range of signal\n(received node)'),
+            pyplot.Circle(xy=(0, 0), radius=0, alpha=0.4, color='yellow', label='range of signal\n(replied node)'),
             pyplot.Circle(xy=(0, 0), radius=0, alpha=0.4, color='blue', label='range of signal\n(sending node)'),
         )
         ax.legend(handles=legend_elements, loc='upper left', bbox_to_anchor=(1.02, 1), borderaxespad=0)
@@ -263,5 +271,11 @@ class Bystander(object):
             )
             ax.add_artist(cir)
             artists.append(cir)
+            if node_info['last_node']:
+                artists.extend(ax.plot(
+                    [node_info['xy'][0], node_info['last_node'][0]],
+                    [node_info['xy'][1], node_info['last_node'][1]],
+                    marker='_', linewidth=1, alpha=0.2, color='red'
+                ))
 
         return artists

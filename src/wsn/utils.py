@@ -68,10 +68,10 @@ def schedule(bystander: Bystander):
                 finish = True
         bystander.action()
 
-        sending_count = 0
-        for node in nodes:
-            if node.sending or node.send_queue or node.recv_queue:
-                sending_count += 1
-        if sending_count >= 288:
-            finish = True
+        # sending_count = 0
+        # for node in nodes:
+        #     if node.sending or node.send_queue or node.recv_queue:
+        #         sending_count += 1
+        # if sending_count >= 288:
+        #     finish = True
     bystander.thread_close()
