@@ -39,6 +39,7 @@ class WsnNode(object):
     # 收发消息相关
     recv_queue: List[NormalMessage]
     send_queue: List[str or NormalMessage]
+    reply_queue: Dict[str, NormalMessage]
     recv_count: int
     replied_nodes: Set[int or str]
     sending: Optional[NormalMessage]
@@ -67,11 +68,12 @@ class WsnNode(object):
         self.thread_cnt = 'stop'
         self.recv_queue = []
         self.send_queue = []
+        self.reply_queue = dict()
         self.recv_count = 0
         self.replied_nodes = set()
         self.sending = None
         self.medium = medium
-        self.action = self.action2
+        self.action = self.action1
         self.route_len = {}
         self.teammate_num = 0
         self.replied_messages = set()
@@ -201,7 +203,7 @@ class WsnNode(object):
 
         # 如果当前有正在发送的消息则发送之
         if self.sending is not None:
-            self.send(NormalMessage(uuid=self.sending.uuid, data=self.sending.data, source=self.node_id))
+            self.send(self.sending)
 
         # 处理收到的各种消息
         while self.recv_queue:
@@ -212,8 +214,9 @@ class WsnNode(object):
                     self.replied_nodes.add(message.handlers[0])
                 continue
 
-            self.recv_count += 1
-            self.logger.info(f'{node_tag}接收到消息 "{message.data}"')
+            if not message.is_reply:
+                self.recv_count += 1
+                self.logger.info(f'{node_tag}接收到消息 "{message.data}"')
 
             # 给消息注册上自己名字，转发之
             message.register(self.node_id)
@@ -229,7 +232,7 @@ class WsnNode(object):
         node_tag = ("node-" + str(self.node_id) + ": ") if not self.multithreading else ""
 
         # 如果一条消息已经被全部确认，则该条消息发送完毕
-        if self.sending is not None and len(self.replied_nodes) >= self.teammate_num:
+        if self.sending is not None and not self.sending.is_reply and len(self.replied_nodes) >= self.teammate_num:
             self.sending = None
             self.replied_nodes = set()
             # 唤醒主线程
@@ -250,19 +253,34 @@ class WsnNode(object):
         # 如果当前有正在发送的消息则发送之
         if self.sending is not None:
             self.send(self.sending)
+        for i, reply in self.reply_queue.items():
+            for _ in range(10):
+                self.send(reply)
 
         # 处理收到的各种消息
         while self.recv_queue:
             message = self.recv_queue.pop(0)
 
             if message.is_reply:
-                if self.node_id != message.handlers[1]:
+                if len(message.handlers) < 2:
                     continue
-                if self.sending is not None and message.uuid == self.sending.uuid:
-                    self.replied_nodes.add(message.handlers[0])
+                self.logger.info(f'{node_tag}接收到消息 "{message.data}" {message.handlers}')
+                if self.reply_queue.get(f'{message.uuid}-{message.handlers[0]}') is not None and \
+                        len(
+                            self.reply_queue.get(f'{message.uuid}-{message.handlers[0]}').handlers
+                        ) > len(message.handlers):
+                    self.reply_queue.pop(f'{message.uuid}-{message.handlers[0]}')
+                    continue
+                if self.node_id != message.handlers[1]:
                     continue
                 message.handlers.pop(1)
                 self.send(message)
+                if self.sending is not None and not self.sending.is_reply and message.uuid == self.sending.uuid:
+                    self.replied_nodes.add(message.handlers[0])
+                    continue
+                if f'{message.uuid}-{message.handlers[0]}' not in self.replied_messages:
+                    self.replied_messages.add(f'{message.uuid}-{message.handlers[0]}')
+                    self.reply_queue[f'{message.uuid}-{message.handlers[0]}'] = message
 
             else:
                 # 自己发送的或者处理过的消息丢弃
@@ -285,13 +303,12 @@ class WsnNode(object):
                     message.register(self.node_id)
                     self.send(message)
 
-                    # 没回复过的消息回应以下
-                    if message.uuid not in self.replied_messages:
-                        reply_message = message.copy()
-                        reply_message.handlers = reply_message.handlers[::-1]
-                        reply_message.is_reply = True
-                        self.replied_messages.add(message.uuid)
-                        self.send_queue.append(reply_message)
+                    # # 没回复过的消息回应以下
+                    # if message.uuid not in self.replied_messages:
+                    #     message.is_reply = True
+                    #     message.handlers = message.handlers[::-1]
+                    #     self.replied_messages.add(message.uuid)
+                    #     self.reply_queue[f'{message.uuid}-{message.handlers[0]}'] = message
 
     def action3(self):
         """节点一次活动（方案二）
@@ -305,9 +322,9 @@ class WsnNode(object):
             message = self.send_queue.pop(0)
             if isinstance(message, str):
                 self.sending = NormalMessage(data=message, source=self.node_id)
+                self.replied_nodes.add(self.node_id)
             elif isinstance(message, NormalMessage):
                 self.sending = message
-            self.replied_nodes.add(self.sending.uuid)
 
         # 如果当前有正在发送的消息则发送之
         if self.sending is not None:

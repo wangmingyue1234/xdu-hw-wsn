@@ -54,4 +54,4 @@ def init_root_logger() -> None:
         # 没有 coloredlogs 就打印单色的 log
         root_logger.addHandler(console_handler)
 
-    root_logger.setLevel(logging.INFO)
+    root_logger.setLevel(logging.WARNING)

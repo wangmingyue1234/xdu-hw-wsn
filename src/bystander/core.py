@@ -214,7 +214,7 @@ class Bystander(object):
         elif not node.is_alive:
             node_info['label'] = 'dead'
             node_info['color'] = 'black'
-        elif node.sending or node.send_queue:
+        elif node.sending or node.send_queue or node.reply_queue:
             node_info['label'] = 'sending'
             node_info['color'] = 'blue'
         elif node.node_id in self.wsn.node_manager.nodes[0].replied_nodes:
