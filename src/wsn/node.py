@@ -4,7 +4,7 @@ import time
 from enum import Enum
 from typing import Any, Callable, Dict, List, Tuple, Optional, Set
 
-from utils import main_thread_wakeup
+from utils import node_want_to_terminate
 
 from .message import NormalMessage
 
@@ -73,7 +73,7 @@ class WsnNode(object):
         self.replied_nodes = set()
         self.sending = None
         self.medium = medium
-        self.action = self.action1
+        self.action = self.action2
         self.route_len = {}
         self.teammate_num = 0
         self.replied_messages = set()
@@ -189,7 +189,7 @@ class WsnNode(object):
             # 唤醒主线程
             if self.multithreading:
                 self.logger.info(f'唤起主线程')
-                main_thread_wakeup.set()
+                node_want_to_terminate.set()
             else:
                 return True
 
@@ -238,7 +238,7 @@ class WsnNode(object):
             # 唤醒主线程
             if self.multithreading:
                 self.logger.info(f'唤起主线程')
-                main_thread_wakeup.set()
+                node_want_to_terminate.set()
             else:
                 return True
 

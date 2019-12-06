@@ -1,3 +1,4 @@
 import threading
 
-main_thread_wakeup: threading.Event = threading.Event()
+
+node_want_to_terminate: threading.Event = threading.Event()

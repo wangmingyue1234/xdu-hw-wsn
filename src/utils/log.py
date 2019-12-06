@@ -3,6 +3,7 @@ import os
 import sys
 import time
 
+
 # 记录第一次引入该模块时的系统时间，用于作为日志文件和路径名
 launch_time: str = time.strftime('%Y-%m-%d_%H%M%S')
 
@@ -18,6 +19,8 @@ def get_log_file_dir_path() -> str:
 
 
 def init_root_logger() -> None:
+    """初始化根日志配置
+    """
     # 日志根目录
     log_file_dir_path = get_log_file_dir_path()
 
@@ -54,4 +57,4 @@ def init_root_logger() -> None:
         # 没有 coloredlogs 就打印单色的 log
         root_logger.addHandler(console_handler)
 
-    root_logger.setLevel(logging.WARNING)
+    root_logger.setLevel(logging.INFO)

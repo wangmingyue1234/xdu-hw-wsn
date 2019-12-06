@@ -1,18 +1,14 @@
 import logging
 import os
 import shutil
-import sys
 import threading
 import time
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 import matplotlib
-# if sys.platform != 'linux':
 matplotlib.use('Qt5Agg')
 
 from matplotlib import pyplot, animation
-from matplotlib.lines import Line2D
-from matplotlib.patches import Patch
 
 from wsn import Wsn, WsnNode
 from utils import get_log_file_dir_path
@@ -90,18 +86,18 @@ class Bystander(object):
         """旁观者线程的主函数
         """
         self.logger.info('旁观者启动')
-        self.thread_init()
+        self.init()
 
         while True:
             if self.thread_cnt == 'stop':
-                self.thread_close()
+                self.close()
                 self.logger.info('旁观者停止')
                 break
 
             self.action()
             time.sleep(0.2)
 
-    def thread_init(self):
+    def init(self):
         self.last_status = None
         self.fig, self.ax = pyplot.subplots()
         self.ax.set_aspect('equal')
@@ -109,7 +105,7 @@ class Bystander(object):
         # 开启交互模式
         pyplot.ion()
 
-    def thread_close(self):
+    def close(self):
         pyplot.close(self.fig)
         # 关闭交互模式
         pyplot.ioff()
@@ -151,7 +147,13 @@ class Bystander(object):
 
             return artists
 
-        anim = animation.FuncAnimation(fig, update, frames=len(self.frames_log), init_func=init, blit=True, interval=500)
+        anim = animation.FuncAnimation(
+            fig, update,
+            frames=len(self.frames_log),
+            init_func=init,
+            blit=True,
+            interval=500
+        )
 
         # 保存动画
         if 'imagemagick' in animation.writers.avail:
@@ -191,22 +193,6 @@ class Bystander(object):
                 self.wsn.node_manager.nodes[int(max(node.route_len['1'].items(), key=lambda x: x[1])[0])-1].xy
                 if node.route_len.get('1') else None
         }
-
-        # if node.node_id == 1 and node.sending is not None:
-        #     node_info['label'] = 'source'
-        #     node_info['color'] = 'red'
-        # elif not node.is_alive:
-        #     node_info['label'] = 'dead'
-        #     node_info['color'] = 'black'
-        # elif node.node_id in self.wsn.node_manager.nodes[0].replied_nodes:
-        #     node_info['label'] = 'replied'
-        #     node_info['color'] = 'yellow'
-        # elif node.recv_count > 0:
-        #     node_info['label'] = 'received'
-        #     node_info['color'] = 'orange'
-        # else:
-        #     node_info['label'] = 'alive'
-        #     node_info['color'] = 'green'
 
         if node.node_id == 1:
             node_info['label'] = 'source'

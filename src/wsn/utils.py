@@ -1,9 +1,7 @@
 import logging
-import time
 
 import numpy
 
-from bystander import Bystander
 from .core import Wsn
 
 
@@ -35,6 +33,7 @@ def generate_rand_nodes(
     node_r_sigma = node_r_sigma if node_r_sigma >= 0. else 0.
 
     # 设置随机数种子
+    # numpy.random.seed(int(time.time()))
     numpy.random.seed(64540)
 
     for _ in range(node_num):
@@ -48,31 +47,3 @@ def generate_rand_nodes(
         wsn.node_manager.add_node(x, y, r, node_power, node_pc_per_send)
 
     return wsn
-
-
-def schedule(bystander: Bystander):
-    finish = False
-    wsn = bystander.wsn
-    nodes = wsn.node_manager.nodes
-
-    # 设置随机数种子
-    numpy.random.seed(int(time.time()))
-
-    for node in nodes:
-        node.multithreading = False
-
-    bystander.thread_init()
-    while not finish:
-        for node in numpy.random.permutation(nodes):
-            if node.action():
-                finish = True
-        bystander.action()
-
-        sending_count = 0
-        for node in nodes:
-            if node.recv_count:
-                sending_count += 1
-        print(sending_count)
-        if sending_count >= 281:
-            finish = True
-    bystander.thread_close()
