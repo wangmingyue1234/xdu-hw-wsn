@@ -26,7 +26,7 @@ def main(multithreading: bool = True):
     logger.info('旁观者生成完成')
 
     # 给一号节点注入灵魂
-    wsn.node_manager.nodes[0].teammate_num = node_num * 0.8
+    wsn.node_manager.nodes[0].teammate_num = node_num * 0.95
     wsn.node_manager.nodes[0].send_queue.append('Hello World!')
 
     if multithreading:
@@ -45,7 +45,7 @@ def main(multithreading: bool = True):
             [
                 TerminationCondition.UserDriven(),
                 TerminationCondition.NodeDriven(),
-                TerminationCondition.NumOfCycles(30),
+                TerminationCondition.NumOfCycles(300),
                 TerminationCondition.SurvivalRate(0.6),
             ]
         )
@@ -60,4 +60,4 @@ def main(multithreading: bool = True):
 
 if __name__ == '__main__':
     threading.main_thread().setName('main')
-    main(True)
+    main(False)

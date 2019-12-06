@@ -6,9 +6,13 @@ import time
 from typing import Any, Dict, List, Optional
 
 import matplotlib
-matplotlib.use('Qt5Agg')
 
-from matplotlib import pyplot, animation
+try:
+    matplotlib.use('Qt5Agg')
+    from matplotlib import pyplot, animation
+except ImportError:
+    matplotlib.use('TkAgg')
+    from matplotlib import pyplot, animation
 
 from wsn import Wsn, WsnNode
 from utils import get_log_file_dir_path

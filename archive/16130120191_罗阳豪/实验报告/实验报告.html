@@ -1,0 +1,509 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>report</title><link href='https://fonts.loli.net/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext' rel='stylesheet' type='text/css' /><style type='text/css'>html {overflow-x: initial !important;}:root { --bg-color:#ffffff; --text-color:#333333; --select-text-bg-color:#B5D6FC; --select-text-font-color:auto; --monospace:"Lucida Console",Consolas,"Courier",monospace; }
+html { font-size: 14px; background-color: var(--bg-color); color: var(--text-color); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { margin: 0px; padding: 0px; height: auto; bottom: 0px; top: 0px; left: 0px; right: 0px; font-size: 1rem; line-height: 1.42857; overflow-x: hidden; background: inherit; tab-size: 4; }
+iframe { margin: auto; }
+a.url { word-break: break-all; }
+a:active, a:hover { outline: 0px; }
+.in-text-selection, ::selection { text-shadow: none; background: var(--select-text-bg-color); color: var(--select-text-font-color); }
+#write { margin: 0px auto; height: auto; width: inherit; word-break: normal; overflow-wrap: break-word; position: relative; white-space: normal; overflow-x: visible; padding-top: 40px; }
+#write.first-line-indent p { text-indent: 2em; }
+#write.first-line-indent li p, #write.first-line-indent p * { text-indent: 0px; }
+#write.first-line-indent li { margin-left: 2em; }
+.for-image #write { padding-left: 8px; padding-right: 8px; }
+body.typora-export { padding-left: 30px; padding-right: 30px; }
+.typora-export .footnote-line, .typora-export li, .typora-export p { white-space: pre-wrap; }
+@media screen and (max-width: 500px) {
+  body.typora-export { padding-left: 0px; padding-right: 0px; }
+  #write { padding-left: 20px; padding-right: 20px; }
+  .CodeMirror-sizer { margin-left: 0px !important; }
+  .CodeMirror-gutters { display: none !important; }
+}
+#write li > figure:last-child { margin-bottom: 0.5rem; }
+#write ol, #write ul { position: relative; }
+img { max-width: 100%; vertical-align: middle; }
+button, input, select, textarea { color: inherit; font: inherit; }
+input[type="checkbox"], input[type="radio"] { line-height: normal; padding: 0px; }
+*, ::after, ::before { box-sizing: border-box; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p, #write pre { width: inherit; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p { position: relative; }
+p { line-height: inherit; }
+h1, h2, h3, h4, h5, h6 { break-after: avoid-page; break-inside: avoid; orphans: 2; }
+p { orphans: 4; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.4rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1rem; }
+.md-math-block, .md-rawblock, h1, h2, h3, h4, h5, h6, p { margin-top: 1rem; margin-bottom: 1rem; }
+.hidden { display: none; }
+.md-blockmeta { color: rgb(204, 204, 204); font-weight: 700; font-style: italic; }
+a { cursor: pointer; }
+sup.md-footnote { padding: 2px 4px; background-color: rgba(238, 238, 238, 0.7); color: rgb(85, 85, 85); border-radius: 4px; cursor: pointer; }
+sup.md-footnote a, sup.md-footnote a:hover { color: inherit; text-transform: inherit; text-decoration: inherit; }
+#write input[type="checkbox"] { cursor: pointer; width: inherit; height: inherit; }
+figure { overflow-x: auto; margin: 1.2em 0px; max-width: calc(100% + 16px); padding: 0px; }
+figure > table { margin: 0px !important; }
+tr { break-inside: avoid; break-after: auto; }
+thead { display: table-header-group; }
+table { border-collapse: collapse; border-spacing: 0px; width: 100%; overflow: auto; break-inside: auto; text-align: left; }
+table.md-table td { min-width: 32px; }
+.CodeMirror-gutters { border-right: 0px; background-color: inherit; }
+.CodeMirror-linenumber { user-select: none; }
+.CodeMirror { text-align: left; }
+.CodeMirror-placeholder { opacity: 0.3; }
+.CodeMirror pre { padding: 0px 4px; }
+.CodeMirror-lines { padding: 0px; }
+div.hr:focus { cursor: none; }
+#write pre { white-space: pre-wrap; }
+#write.fences-no-line-wrapping pre { white-space: pre; }
+#write pre.ty-contain-cm { white-space: normal; }
+.CodeMirror-gutters { margin-right: 4px; }
+.md-fences { font-size: 0.9rem; display: block; break-inside: avoid; text-align: left; overflow: visible; white-space: pre; background: inherit; position: relative !important; }
+.md-diagram-panel { width: 100%; margin-top: 10px; text-align: center; padding-top: 0px; padding-bottom: 8px; overflow-x: auto; }
+#write .md-fences.mock-cm { white-space: pre-wrap; }
+.md-fences.md-fences-with-lineno { padding-left: 0px; }
+#write.fences-no-line-wrapping .md-fences.mock-cm { white-space: pre; overflow-x: auto; }
+.md-fences.mock-cm.md-fences-with-lineno { padding-left: 8px; }
+.CodeMirror-line, twitterwidget { break-inside: avoid; }
+.footnotes { opacity: 0.8; font-size: 0.9rem; margin-top: 1em; margin-bottom: 1em; }
+.footnotes + .footnotes { margin-top: 0px; }
+.md-reset { margin: 0px; padding: 0px; border: 0px; outline: 0px; vertical-align: top; background: 0px 0px; text-decoration: none; text-shadow: none; float: none; position: static; width: auto; height: auto; white-space: nowrap; cursor: inherit; -webkit-tap-highlight-color: transparent; line-height: normal; font-weight: 400; text-align: left; box-sizing: content-box; direction: ltr; }
+li div { padding-top: 0px; }
+blockquote { margin: 1rem 0px; }
+li .mathjax-block, li p { margin: 0.5rem 0px; }
+li { margin: 0px; position: relative; }
+blockquote > :last-child { margin-bottom: 0px; }
+blockquote > :first-child, li > :first-child { margin-top: 0px; }
+.footnotes-area { color: rgb(136, 136, 136); margin-top: 0.714rem; padding-bottom: 0.143rem; white-space: normal; }
+#write .footnote-line { white-space: pre-wrap; }
+@media print {
+  body, html { border: 1px solid transparent; height: 99%; break-after: avoid; break-before: avoid; }
+  #write { margin-top: 0px; padding-top: 0px; border-color: transparent !important; }
+  .typora-export * { -webkit-print-color-adjust: exact; }
+  html.blink-to-pdf { font-size: 13px; }
+  .typora-export #write { padding-left: 32px; padding-right: 32px; padding-bottom: 0px; break-after: avoid; }
+  .typora-export #write::after { height: 0px; }
+}
+.footnote-line { margin-top: 0.714em; font-size: 0.7em; }
+a img, img a { cursor: pointer; }
+pre.md-meta-block { font-size: 0.8rem; min-height: 0.8rem; white-space: pre-wrap; background: rgb(204, 204, 204); display: block; overflow-x: hidden; }
+p > .md-image:only-child:not(.md-img-error) img, p > img:only-child { display: block; margin: auto; }
+p > .md-image:only-child { display: inline-block; width: 100%; }
+#write .MathJax_Display { margin: 0.8em 0px 0px; }
+.md-math-block { width: 100%; }
+.md-math-block:not(:empty)::after { display: none; }
+[contenteditable="true"]:active, [contenteditable="true"]:focus { outline: 0px; box-shadow: none; }
+.md-task-list-item { position: relative; list-style-type: none; }
+.task-list-item.md-task-list-item { padding-left: 0px; }
+.md-task-list-item > input { position: absolute; top: 0px; left: 0px; margin-left: -1.2em; margin-top: calc(1em - 10px); border: none; }
+.math { font-size: 1rem; }
+.md-toc { min-height: 3.58rem; position: relative; font-size: 0.9rem; border-radius: 10px; }
+.md-toc-content { position: relative; margin-left: 0px; }
+.md-toc-content::after, .md-toc::after { display: none; }
+.md-toc-item { display: block; color: rgb(65, 131, 196); }
+.md-toc-item a { text-decoration: none; }
+.md-toc-inner:hover { text-decoration: underline; }
+.md-toc-inner { display: inline-block; cursor: pointer; }
+.md-toc-h1 .md-toc-inner { margin-left: 0px; font-weight: 700; }
+.md-toc-h2 .md-toc-inner { margin-left: 2em; }
+.md-toc-h3 .md-toc-inner { margin-left: 4em; }
+.md-toc-h4 .md-toc-inner { margin-left: 6em; }
+.md-toc-h5 .md-toc-inner { margin-left: 8em; }
+.md-toc-h6 .md-toc-inner { margin-left: 10em; }
+@media screen and (max-width: 48em) {
+  .md-toc-h3 .md-toc-inner { margin-left: 3.5em; }
+  .md-toc-h4 .md-toc-inner { margin-left: 5em; }
+  .md-toc-h5 .md-toc-inner { margin-left: 6.5em; }
+  .md-toc-h6 .md-toc-inner { margin-left: 8em; }
+}
+a.md-toc-inner { font-size: inherit; font-style: inherit; font-weight: inherit; line-height: inherit; }
+.footnote-line a:not(.reversefootnote) { color: inherit; }
+.md-attr { display: none; }
+.md-fn-count::after { content: "."; }
+code, pre, samp, tt { font-family: var(--monospace); }
+kbd { margin: 0px 0.1em; padding: 0.1em 0.6em; font-size: 0.8em; color: rgb(36, 39, 41); background: rgb(255, 255, 255); border: 1px solid rgb(173, 179, 185); border-radius: 3px; box-shadow: rgba(12, 13, 14, 0.2) 0px 1px 0px, rgb(255, 255, 255) 0px 0px 0px 2px inset; white-space: nowrap; vertical-align: middle; }
+.md-comment { color: rgb(162, 127, 3); opacity: 0.8; font-family: var(--monospace); }
+code { text-align: left; vertical-align: initial; }
+a.md-print-anchor { white-space: pre !important; border-width: initial !important; border-style: none !important; border-color: initial !important; display: inline-block !important; position: absolute !important; width: 1px !important; right: 0px !important; outline: 0px !important; background: 0px 0px !important; text-decoration: initial !important; text-shadow: initial !important; }
+.md-inline-math .MathJax_SVG .noError { display: none !important; }
+.html-for-mac .inline-math-svg .MathJax_SVG { vertical-align: 0.2px; }
+.md-math-block .MathJax_SVG_Display { text-align: center; margin: 0px; position: relative; text-indent: 0px; max-width: none; max-height: none; min-height: 0px; min-width: 100%; width: auto; overflow-y: hidden; display: block !important; }
+.MathJax_SVG_Display, .md-inline-math .MathJax_SVG_Display { width: auto; margin: inherit; display: inline-block !important; }
+.MathJax_SVG .MJX-monospace { font-family: var(--monospace); }
+.MathJax_SVG .MJX-sans-serif { font-family: sans-serif; }
+.MathJax_SVG { display: inline; font-style: normal; font-weight: 400; line-height: normal; zoom: 90%; text-indent: 0px; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; overflow-wrap: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0px; min-height: 0px; border: 0px; padding: 0px; margin: 0px; }
+.MathJax_SVG * { transition: none 0s ease 0s; }
+.MathJax_SVG_Display svg { vertical-align: middle !important; margin-bottom: 0px !important; margin-top: 0px !important; }
+.os-windows.monocolor-emoji .md-emoji { font-family: "Segoe UI Symbol", sans-serif; }
+.md-diagram-panel > svg { max-width: 100%; }
+[lang="mermaid"] svg, [lang="flow"] svg { max-width: 100%; height: auto; }
+[lang="mermaid"] .node text { font-size: 1rem; }
+table tr th { border-bottom: 0px; }
+video { max-width: 100%; display: block; margin: 0px auto; }
+iframe { max-width: 100%; width: 100%; border: none; }
+.highlight td, .highlight tr { border: 0px; }
+svg[id^="mermaidChart"] { line-height: 1em; }
+mark { background: rgb(255, 255, 0); color: rgb(0, 0, 0); }
+.md-html-inline .md-plain, .md-html-inline strong, mark .md-inline-math, mark strong { color: inherit; }
+mark .md-meta { color: rgb(0, 0, 0); opacity: 0.3 !important; }
+
+
+:root {
+    --side-bar-bg-color: #fafafa;
+    --control-text-color: #777;
+}
+
+@include-when-export url(https://fonts.loli.net/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext);
+
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: "Open Sans","Clear Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    color: rgb(51, 51, 51);
+    line-height: 1.6;
+}
+
+#write {
+    max-width: 860px;
+  	margin: 0 auto;
+  	padding: 30px;
+    padding-bottom: 100px;
+}
+#write > ul:first-child,
+#write > ol:first-child{
+    margin-top: 30px;
+}
+
+a {
+    color: #4183C4;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    position: relative;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    line-height: 1.4;
+    cursor: text;
+}
+h1:hover a.anchor,
+h2:hover a.anchor,
+h3:hover a.anchor,
+h4:hover a.anchor,
+h5:hover a.anchor,
+h6:hover a.anchor {
+    text-decoration: none;
+}
+h1 tt,
+h1 code {
+    font-size: inherit;
+}
+h2 tt,
+h2 code {
+    font-size: inherit;
+}
+h3 tt,
+h3 code {
+    font-size: inherit;
+}
+h4 tt,
+h4 code {
+    font-size: inherit;
+}
+h5 tt,
+h5 code {
+    font-size: inherit;
+}
+h6 tt,
+h6 code {
+    font-size: inherit;
+}
+h1 {
+    padding-bottom: .3em;
+    font-size: 2.25em;
+    line-height: 1.2;
+    border-bottom: 1px solid #eee;
+}
+h2 {
+   padding-bottom: .3em;
+    font-size: 1.75em;
+    line-height: 1.225;
+    border-bottom: 1px solid #eee;
+}
+h3 {
+    font-size: 1.5em;
+    line-height: 1.43;
+}
+h4 {
+    font-size: 1.25em;
+}
+h5 {
+    font-size: 1em;
+}
+h6 {
+   font-size: 1em;
+    color: #777;
+}
+p,
+blockquote,
+ul,
+ol,
+dl,
+table{
+    margin: 0.8em 0;
+}
+li>ol,
+li>ul {
+    margin: 0 0;
+}
+hr {
+    height: 2px;
+    padding: 0;
+    margin: 16px 0;
+    background-color: #e7e7e7;
+    border: 0 none;
+    overflow: hidden;
+    box-sizing: content-box;
+}
+
+li p.first {
+    display: inline-block;
+}
+ul,
+ol {
+    padding-left: 30px;
+}
+ul:first-child,
+ol:first-child {
+    margin-top: 0;
+}
+ul:last-child,
+ol:last-child {
+    margin-bottom: 0;
+}
+blockquote {
+    border-left: 4px solid #dfe2e5;
+    padding: 0 15px;
+    color: #777777;
+}
+blockquote blockquote {
+    padding-right: 0;
+}
+table {
+    padding: 0;
+    word-break: initial;
+}
+table tr {
+    border-top: 1px solid #dfe2e5;
+    margin: 0;
+    padding: 0;
+}
+table tr:nth-child(2n),
+thead {
+    background-color: #f8f8f8;
+}
+table tr th {
+    font-weight: bold;
+    border: 1px solid #dfe2e5;
+    border-bottom: 0;
+    margin: 0;
+    padding: 6px 13px;
+}
+table tr td {
+    border: 1px solid #dfe2e5;
+    margin: 0;
+    padding: 6px 13px;
+}
+table tr th:first-child,
+table tr td:first-child {
+    margin-top: 0;
+}
+table tr th:last-child,
+table tr td:last-child {
+    margin-bottom: 0;
+}
+
+.CodeMirror-lines {
+    padding-left: 4px;
+}
+
+.code-tooltip {
+    box-shadow: 0 1px 1px 0 rgba(0,28,36,.3);
+    border-top: 1px solid #eef2f2;
+}
+
+.md-fences,
+code,
+tt {
+    border: 1px solid #e7eaed;
+    background-color: #f8f8f8;
+    border-radius: 3px;
+    padding: 0;
+    padding: 2px 4px 0px 4px;
+    font-size: 0.9em;
+}
+
+code {
+    background-color: #f3f4f4;
+    padding: 0 2px 0 2px;
+}
+
+.md-fences {
+    margin-bottom: 15px;
+    margin-top: 15px;
+    padding-top: 8px;
+    padding-bottom: 6px;
+}
+
+
+.md-task-list-item > input {
+  margin-left: -1.3em;
+}
+
+@media print {
+    html {
+        font-size: 13px;
+    }
+    table,
+    pre {
+        page-break-inside: avoid;
+    }
+    pre {
+        word-wrap: break-word;
+    }
+}
+
+.md-fences {
+	background-color: #f8f8f8;
+}
+#write pre.md-meta-block {
+	padding: 1rem;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: #f7f7f7;
+    border: 0;
+    border-radius: 3px;
+    color: #777777;
+    margin-top: 0 !important;
+}
+
+.mathjax-block>.code-tooltip {
+	bottom: .375rem;
+}
+
+.md-mathjax-midline {
+    background: #fafafa;
+}
+
+#write>h3.md-focus:before{
+	left: -1.5625rem;
+	top: .375rem;
+}
+#write>h4.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
+}
+#write>h5.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
+}
+#write>h6.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
+}
+.md-image>.md-meta {
+    /*border: 1px solid #ddd;*/
+    border-radius: 3px;
+    padding: 2px 0px 0px 4px;
+    font-size: 0.9em;
+    color: inherit;
+}
+
+.md-tag {
+    color: #a7a7a7;
+    opacity: 1;
+}
+
+.md-toc { 
+    margin-top:20px;
+    padding-bottom:20px;
+}
+
+.sidebar-tabs {
+    border-bottom: none;
+}
+
+#typora-quick-open {
+    border: 1px solid #ddd;
+    background-color: #f8f8f8;
+}
+
+#typora-quick-open-item {
+    background-color: #FAFAFA;
+    border-color: #FEFEFE #e5e5e5 #e5e5e5 #eee;
+    border-style: solid;
+    border-width: 1px;
+}
+
+/** focus mode */
+.on-focus-mode blockquote {
+    border-left-color: rgba(85, 85, 85, 0.12);
+}
+
+header, .context-menu, .megamenu-content, footer{
+    font-family: "Segoe UI", "Arial", sans-serif;
+}
+
+.file-node-content:hover .file-node-icon,
+.file-node-content:hover .file-node-open-state{
+    visibility: visible;
+}
+
+.mac-seamless-mode #typora-sidebar {
+    background-color: #fafafa;
+    background-color: var(--side-bar-bg-color);
+}
+
+.md-lang {
+    color: #b4654d;
+}
+
+.html-for-mac .context-menu {
+    --item-hover-bg-color: #E6F0FE;
+}
+
+#md-notification .btn {
+    border: 0;
+}
+
+.dropdown-menu .divider {
+    border-color: #e5e5e5;
+}
+
+.ty-preferences .window-content {
+    background-color: #fafafa;
+}
+
+.ty-preferences .nav-group-item.active {
+    color: white;
+    background: #999;
+}
+
+
+</style>
+</head>
+<body class='typora-export' >
+<div  id='write'  class = 'is-node'><h1><a name="无线传感网实验-实验报告" class="md-header-anchor"></a><span>无线传感网实验 实验报告</span></h1><p><strong><span>学院：计算机科学与技术学院</span></strong></p><p><strong><span>指导教师：李瑞、蒋志平</span></strong></p><p><strong><span>项目成员：</span></strong></p><ul><li><span>罗阳豪 16130120191</span></li><li><span>方浩杰 16130120201</span></li></ul><blockquote><p><span>报告中含有较多 GIF 图片，以演示实验过程，如果不能播放，可以通过下方链接查看该报告的 Web 版</span><br/><a href='https://oss.keybrl.com/wsn-dds/report.html'><span>https://oss.keybrl.com/wsn-dds/report.html</span></a></p><p><span>或者通过每个 GIF 图片下方标注的 </span><strong><span>图片链接</span></strong><span> 查看图片。</span></p></blockquote><h2><a name="1-实验背景与题目要求" class="md-header-anchor"></a><span>1. 实验背景与题目要求</span></h2><p><span>在⽆线多跳⾃组织⽹络环境下，⾼效地将关键数据从⽹络的⼀端扩散⾄全⽹是多跳⾃组织⽹络中⾮ 常重要的重要之⼀，⼴泛⽤于⽹络控制、公共数据⼴播、时间同步等，这种数据⼴播协议⼀般称为 数据分发协议。</span></p><p><span>分发协议本质是⼀种⼴播协议，⽬的是让环境中所有的节点都收到消息。但分发协议在⽆线多跳⽹ 络中存在多⽅⾯的权衡与设计挑战，例如：</span></p><ul><li><span>应实现总体节能，分发协议应尽可能减少⽆线发送的次数，延⻓⽹络的⼯作寿命；</span></li><li><span>应实现个体节能 ，应降低对某个特定节点的发送次数，当此节点失效时，可能会影响整个⽹络的 ⼯作；</span></li><li><span>应尽量减⼩⽹络跳数，⽹络跳数过多，传输成功率会下降，同时传输时延会上升</span></li></ul><p><strong><span>题目：</span></strong></p><ol start='' ><li><p><span>在 MATLAB 或 Python 中模拟 N(N &gt; 100) 个节点的多跳传感⽹络，该 N 个节点随机分布在 100m * 100m 的正⽅形 2 维平⾯。每个节点的通信半径符合正态分布 </span><span class="MathJax_SVG" tabindex="-1" style="font-size: 100%; display: inline-block;"><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="12.83ex" height="2.811ex" viewBox="0 -906.7 5524.1 1210.2" role="img" focusable="false" style="vertical-align: -0.705ex;"><defs><path stroke-width="0" id="E1-MJMATHI-72" d="M21 287Q22 290 23 295T28 317T38 348T53 381T73 411T99 433T132 442Q161 442 183 430T214 408T225 388Q227 382 228 382T236 389Q284 441 347 441H350Q398 441 422 400Q430 381 430 363Q430 333 417 315T391 292T366 288Q346 288 334 299T322 328Q322 376 378 392Q356 405 342 405Q286 405 239 331Q229 315 224 298T190 165Q156 25 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 114 189T154 366Q154 405 128 405Q107 405 92 377T68 316T57 280Q55 278 41 278H27Q21 284 21 287Z"></path><path stroke-width="0" id="E1-MJAMS-223C" d="M73 132Q55 132 55 172Q55 220 79 272Q95 301 111 319Q148 353 195 363Q199 364 212 364Q262 364 294 350T408 272Q472 222 522 212Q537 208 555 208Q606 208 646 243Q671 268 680 296T691 342T702 365Q713 365 716 354T719 314Q714 236 664 179L660 176Q657 173 654 170T644 163T631 154T615 146T596 139T574 134T549 132Q510 132 465 156T386 211T307 265T223 290Q162 290 124 249T86 165Q86 155 82 144T73 132Z"></path><path stroke-width="0" id="E1-MJMATHI-4E" d="M234 637Q231 637 226 637Q201 637 196 638T191 649Q191 676 202 682Q204 683 299 683Q376 683 387 683T401 677Q612 181 616 168L670 381Q723 592 723 606Q723 633 659 637Q635 637 635 648Q635 650 637 660Q641 676 643 679T653 683Q656 683 684 682T767 680Q817 680 843 681T873 682Q888 682 888 672Q888 650 880 642Q878 637 858 637Q787 633 769 597L620 7Q618 0 599 0Q585 0 582 2Q579 5 453 305L326 604L261 344Q196 88 196 79Q201 46 268 46H278Q284 41 284 38T282 19Q278 6 272 0H259Q228 2 151 2Q123 2 100 2T63 2T46 1Q31 1 31 10Q31 14 34 26T39 40Q41 46 62 46Q130 49 150 85Q154 91 221 362L289 634Q287 635 234 637Z"></path><path stroke-width="0" id="E1-MJMAIN-28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path><path stroke-width="0" id="E1-MJMATHI-3BC" d="M58 -216Q44 -216 34 -208T23 -186Q23 -176 96 116T173 414Q186 442 219 442Q231 441 239 435T249 423T251 413Q251 401 220 279T187 142Q185 131 185 107V99Q185 26 252 26Q261 26 270 27T287 31T302 38T315 45T327 55T338 65T348 77T356 88T365 100L372 110L408 253Q444 395 448 404Q461 431 491 431Q504 431 512 424T523 412T525 402L449 84Q448 79 448 68Q448 43 455 35T476 26Q485 27 496 35Q517 55 537 131Q543 151 547 152Q549 153 557 153H561Q580 153 580 144Q580 138 575 117T555 63T523 13Q510 0 491 -8Q483 -10 467 -10Q446 -10 429 -4T402 11T385 29T376 44T374 51L368 45Q362 39 350 30T324 12T288 -4T246 -11Q199 -11 153 12L129 -85Q108 -167 104 -180T92 -202Q76 -216 58 -216Z"></path><path stroke-width="0" id="E1-MJMAIN-2C" d="M78 35T78 60T94 103T137 121Q165 121 187 96T210 8Q210 -27 201 -60T180 -117T154 -158T130 -185T117 -194Q113 -194 104 -185T95 -172Q95 -168 106 -156T131 -126T157 -76T173 -3V9L172 8Q170 7 167 6T161 3T152 1T140 0Q113 0 96 17Z"></path><path stroke-width="0" id="E1-MJMATHI-3C3" d="M184 -11Q116 -11 74 34T31 147Q31 247 104 333T274 430Q275 431 414 431H552Q553 430 555 429T559 427T562 425T565 422T567 420T569 416T570 412T571 407T572 401Q572 357 507 357Q500 357 490 357T476 358H416L421 348Q439 310 439 263Q439 153 359 71T184 -11ZM361 278Q361 358 276 358Q152 358 115 184Q114 180 114 178Q106 141 106 117Q106 67 131 47T188 26Q242 26 287 73Q316 103 334 153T356 233T361 278Z"></path><path stroke-width="0" id="E1-MJMAIN-32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z"></path><path stroke-width="0" id="E1-MJMAIN-29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><use xlink:href="#E1-MJMATHI-72" x="0" y="0"></use><use xlink:href="#E1-MJAMS-223C" x="728" y="0"></use><use xlink:href="#E1-MJMATHI-4E" x="1784" y="0"></use><use xlink:href="#E1-MJMAIN-28" x="2672" y="0"></use><use xlink:href="#E1-MJMATHI-3BC" x="3061" y="0"></use><use xlink:href="#E1-MJMAIN-2C" x="3664" y="0"></use><g transform="translate(4109,0)"><use xlink:href="#E1-MJMATHI-3C3" x="0" y="0"></use><use transform="scale(0.707)" xlink:href="#E1-MJMAIN-32" x="809" y="513"></use></g><use xlink:href="#E1-MJMAIN-29" x="5135" y="0"></use></g></svg></span><script type="math/tex">r \thicksim N(\mu, \sigma^2)</script><span> ；进⼀步，假设当两个节点距离为 d 时，通信成功率 </span><span class="MathJax_SVG" tabindex="-1" style="font-size: 100%; display: inline-block;"><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="11.744ex" height="3.745ex" viewBox="0 -1107.7 5056.2 1612.3" role="img" focusable="false" style="vertical-align: -1.172ex;"><defs><path stroke-width="0" id="E2-MJMATHI-74" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path><path stroke-width="0" id="E2-MJMAIN-3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path><path stroke-width="0" id="E2-MJMAIN-31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path><path stroke-width="0" id="E2-MJMAIN-2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path><path stroke-width="0" id="E2-MJMATHI-64" d="M366 683Q367 683 438 688T511 694Q523 694 523 686Q523 679 450 384T375 83T374 68Q374 26 402 26Q411 27 422 35Q443 55 463 131Q469 151 473 152Q475 153 483 153H487H491Q506 153 506 145Q506 140 503 129Q490 79 473 48T445 8T417 -8Q409 -10 393 -10Q359 -10 336 5T306 36L300 51Q299 52 296 50Q294 48 292 46Q233 -10 172 -10Q117 -10 75 30T33 157Q33 205 53 255T101 341Q148 398 195 420T280 442Q336 442 364 400Q369 394 369 396Q370 400 396 505T424 616Q424 629 417 632T378 637H357Q351 643 351 645T353 664Q358 683 366 683ZM352 326Q329 405 277 405Q242 405 210 374T160 293Q131 214 119 129Q119 126 119 118T118 106Q118 61 136 44T179 26Q233 26 290 98L298 109L352 326Z"></path><path stroke-width="0" id="E2-MJMAIN-32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z"></path><path stroke-width="0" id="E2-MJMATHI-72" d="M21 287Q22 290 23 295T28 317T38 348T53 381T73 411T99 433T132 442Q161 442 183 430T214 408T225 388Q227 382 228 382T236 389Q284 441 347 441H350Q398 441 422 400Q430 381 430 363Q430 333 417 315T391 292T366 288Q346 288 334 299T322 328Q322 376 378 392Q356 405 342 405Q286 405 239 331Q229 315 224 298T190 165Q156 25 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 114 189T154 366Q154 405 128 405Q107 405 92 377T68 316T57 280Q55 278 41 278H27Q21 284 21 287Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><use xlink:href="#E2-MJMATHI-74" x="0" y="0"></use><use xlink:href="#E2-MJMAIN-3D" x="638" y="0"></use><use xlink:href="#E2-MJMAIN-31" x="1694" y="0"></use><use xlink:href="#E2-MJMAIN-2212" x="2416" y="0"></use><g transform="translate(3194,0)"><g transform="translate(342,0)"><rect stroke="none" width="1399" height="60" x="0" y="220"></rect><g transform="translate(354,411)"><use transform="scale(0.707)" xlink:href="#E2-MJMATHI-64" x="0" y="0"></use><use transform="scale(0.5)" xlink:href="#E2-MJMAIN-32" x="741" y="595"></use></g><g transform="translate(60,-345)"><use transform="scale(0.707)" xlink:href="#E2-MJMATHI-72" x="0" y="0"></use><use transform="scale(0.5)" xlink:href="#E2-MJMAIN-31" x="637" y="-213"></use><g transform="translate(639,0)"><use transform="scale(0.707)" xlink:href="#E2-MJMATHI-72" x="0" y="0"></use><use transform="scale(0.5)" xlink:href="#E2-MJMAIN-32" x="637" y="-213"></use></g></g></g></g></g></svg></span><script type="math/tex">t = 1 - \frac{d^2}{r_1r_2}</script><span> 。每个节点⼀些基础物理信息：id，总电量，单次发射耗电量；</span></p></li><li><p><span>设计⾃⼰的数据分发协议：</span></p><ol start='' ><li><span>基本要求：在不考虑电量的情况下，可实现从任意选定的⼀点将信息分发⾄全⽹</span></li><li><span>进阶要求：在考虑电量的情况下，实现从任意选定的⼀点将信息分发⾄全⽹</span></li><li><span>⾼阶要求：在考虑电量的情况下，提出⼀种最优的数据分发策略</span></li></ol></li><li><p><span>可视化多跳⽹络，并通过简单的过程动画展示分发过程</span></p></li></ol><h2><a name="2-实验思路与过程" class="md-header-anchor"></a><span>2. 实验思路与过程</span></h2><h3><a name="21-模拟无线传感网并将其可视化" class="md-header-anchor"></a><span>2.1 模拟无线传感网并将其可视化</span></h3><p><span>该项目使用 Python3 实现，使用数学库 </span><code>numpy</code><span> 生成所需的随机数和进行一些节点坐标的运算，使用 </span><code>matplotlib</code><span> 进行数据可视化，使用 </span><code>PyQt5</code><span> 作为数据可视化的图形引擎，并使用 </span><code>coloredlogs</code><span> 为打印在终端的 log 提供一些人类友好的色彩。</span></p><p><span>无线传感网是由若干孤立的节点构成的，它们一般是具有通信能力的小型嵌入式设备，它们可以独立地收、发消息。所以应该将其实现为一个节点类 </span><code>WsnNode</code><span> ，这样一个类包含坐标、电量、发送消息队列、接收消息队列等属性，并实现有至少收发消息的方法。并且由于这些节点是独立运作的，所以很适合将其运行放在独立线程中，一个节点一个线程。所以这样一个线程也是 </span><code>WsnNode</code><span> 类的属性。</span></p><p><span>对于一个无线传感网来说，节点应该能够被添加、删除，并且为了实验可控，它还应该能够控制节点的开启和关闭。所以将这些对节点的管理和操作可以打包为一个节点管理者类 </span><code>WsnNodeManager</code><span> 。通过节点管理者，我们可以批量创建节点、同时将这些节点开启（启动这些节点的节点线程）、同时将它们关闭（通知这些节点的节点线程退出）。</span></p><p><span>节点及其管理者并不是一个无线传感网的全部，在真实环境下，空间也是无线传感网的一部分，空间作为无线传感网节点间通信的“介质”，能够容纳无线电信号，通过一些物理过程（比如随着传播距离增加而削弱信号强度），并且最终带着被物理规律过滤过的信号，概率地送达可能的接收者。所以再实现一个 </span><code>WsnMedium</code><span> 类，以模拟这个过程，一个无线传感网应该只有一个介质对象，它是被所有节点共享的。介质类提供“传播”的方法，接收消息作为参数，用数学方法模拟物理过程，然后概率地将消息放到可能的目标节点的接收消息队列。其实放置消息到接收消息队列原则上应该是节点的网络接口卡做的事情，但是为了简化设计，把这一部分交给了介质。</span></p><p><span>作为通信协议的一部分，消息除了内容本身，还带有其它的信息，以达到协调传输过程的目的。在真实情况下这些额外信息和消息内容本身会被按照一定的格式包装在一个或多个分组中，并编码。但是编解码、封包解包并不是这个实验的重点，所以我们用基类 </span><code>BaseMessage</code><span> 及其各种子类来表示，根据协议需要，类除了消息内容本身，还会有额外的属性。所有消息都会是 </span><code>BaseMessage</code><span>的对象或其子类的对象，它们能在节点与介质之间交换。</span></p><p><span>节点、节点管理器、介质、消息，构成了一个无线传感网。将它们初始化，让它们跑起来，就能模拟一个无线传感网的工作。但是如何将其工作过程可视化呢，除了无线传感网工作时打的成吨的 log ，我们还使用 </span><code>matplotlib</code><span> 在一个平面坐标系上绘制一些点和圆来表示节点和节点的通信半径，并用不同的颜色来区分节点的不同状态。</span></p><p><img src="./images/demo.png" referrerpolicy="no-referrer" alt="result"></p><p><span>我们在一个独立线程上不停地检查网络上各个节点的状态，并且将变化更新到图像上。通过图像表示的节点状态的变化，我们可以直观地了解这个网络的工作情况。这些能力被我们打包在旁观者类 </span><code>Bystander</code><span> 中。它除了能在网络工作时实时呈现网络状态，还会在网络停止后将记录的每一帧结果以 </span><code>.gif</code><span> （取决于系统支持）和 </span><code>.html</code><span> 、 </span><code>.png</code><span> 文件的形式持久化。</span></p><p><span>由此，我们搭建了一套实验框架，接下来只需要去实现和调整这里面节点的行为，就能够进行实验验证。</span></p><p><span>以下示例中，尽管我们使用了不同的算法、节点的行为、消息的传播都有其随机性，但是在生成地图时使用了一样的随机数种子，使得 </span><strong><span>生成的地图和发送消息的源节点都是一样的</span></strong><span> ，以方便比较。</span></p><h3><a name="22-实现基本要求" class="md-header-anchor"></a><span>2.2 实现基本要求</span></h3><blockquote><p><span>基本要求：在不考虑电量的情况下，可实现从任意选定的⼀点将信息分发⾄全⽹</span></p></blockquote><p><span>这个要求其实基本就是没有要求，只要求消息送达。我们很容易能够想到一个能够迅速传播消息的方法“广播风暴”。就是，源头节点不停地重复发送同一个消息，收到这个消息的节点也不停重复地转发这个消息。它的效果如下图所示</span></p><p><img src="./images/2.2.gif" referrerpolicy="no-referrer" alt="plan0"><span>  </span></p><p><strong><span>上图是一个 GIF 图片，如果不能播放，可以访问 </span><a href='https://oss.keybrl.com/wsn-dds/images/2.2.gif'><span>https://oss.keybrl.com/wsn-dds/images/2.2.gif</span></a></strong></p><p><span>图中，绿色表示普通的节点，蓝色表示接收到消息并器在发送的节点。可以看出来，消息扩散的速度非常快，而且只要时间足够长，所有能够与源节点之间存在通信链路的节点最终都会接收到消息。</span></p><p><span>这种方案只有一个问题，就是 </span><strong><span>耗电量无穷大</span></strong><span> 。因为不管消息覆盖情况如何，没有一种机制让这些节点能够自发停下来。在这个实验中，是我看到绝大部分节点都接收到了，于是用按键中断通知主线程停止，但是在实际中，不会有一个上帝视角来观察消息的发送情况，所以节点也只能无休止地重复广播。不过作为参考，在外部介入的情况下，完成上图中的数据分发，一共消耗了 5311 点电力（一个节点发送一次消耗 1 点）。</span></p><h3><a name="23-尝试进阶要求" class="md-header-anchor"></a><span>2.3 尝试进阶要求</span></h3><blockquote><p><span>进阶要求：在考虑电量的情况下，实现从任意选定的⼀点将信息分发⾄全⽹</span></p></blockquote><h4><a name="231-初始方案有限重发--单次转发--要求回应" class="md-header-anchor"></a><span>2.3.1 初始方案：有限重发 + 单次转发 + 要求回应</span></h4><p><span>由于上一个方案耗电量无穷大的原因就是节点不知道何时停止，但是网络要求确保送达，只能不停重发。所以解决方法就是接收到消息需要回应。每一个消息带一个 UUID ，这个消息的所有重发、转发、回应都使用同样的 UUID 。如果要让每个中间节点都停止，就需要确保每个节点都接收到其它所有节点的回应，那么如何传播回应，如何停止回应的重发和转发又是一个问题，如果这样讨论下去将会没完没了。就好像你难以让一个沸腾的班级安静下来。</span></p><p><span>所以最好就是控制消息的传播，只有消息源可以重发消息，其它中间节点只能跟着转发一次，而且每次转发会在消息中记录上自己的 ID ，如果是收到一个自己转发过的消息就丢弃，以确保网络中不会形成转发的环路。这样，只要源头停止重发，整个网络就会停下来。</span></p><p><span>但是源头如何停止重发呢，就是根据回应。每个节点收到一个非回应消息，就要发送一个对应的回应消息，回应消息也是通过一样的方式可以被中间节点转发一次，但是不需要对回应消息回应。源头节点一边重发，一边接收回应消息，当它发现网络中所有节点都给它回应了，它就停止。</span></p><p><span>这样做还有最后一个问题，就是源头节点如何知道网络中有哪些节点？我们假设网络中的节点是一次性投放的，而且它们是有共同目标的，所以它们 ID 的编号是彼此关联的。比如一个编号 </span><code>2/300</code><span> 表示编号总范围是 1-300 ，它自己编号是 2 ，这样每个节点就能够知道网络中其它节点的编号。所以当源头节点收集到所有其它节点的回应后，停止重发消息，整个网络上对这个消息的转发和回应和回应的转发，很快都会停止。</span></p><p><span>实际情况下，经测试，这样做网络中传播的消息量实在是太大了，所有节点调度两轮不到就已经花费 10 万点电力，而消息还传到没超过 20 个节点。所以我们加了一些逻辑，过滤了部分消息。如果两个个消息的 UUID 、源节点、最后一个转发节点，这三个属性都是完全一样的，那么认为这个两个消息是类似的，一个节点在一次调度中不会重复处理类似的消息。也就是限制了类似消息在网络中的传播能力。这样稍微处理一下之后，效果如下图</span></p><p><img src="./images/2.3.1.gif" referrerpolicy="no-referrer" alt="2.3.1"></p><p><strong><span>上图是一个 GIF 图片，如果不能播放，可以访问 </span><a href='https://oss.keybrl.com/wsn-dds/images/2.3.1.gif'><span>https://oss.keybrl.com/wsn-dds/images/2.3.1.gif</span></a></strong></p><p><span>途中橙色的表示接收到消息的节点，黄色表示接收到消息且源节点收到了它们的回应的节点。</span></p><p><span>可以看到，由于只有一个源头在重发，沿着传播链，越往后消息在转发过程中丢失的概率就越大，回应被丢失的概率也越大，所以传播比较慢。而且由于有一些节点通信半径极小，没法与其它节点建立通信，所以无论如何也无法接收到消息。但是源头节点不能知道哪些节点是这种情况，所以设定了 90% 的阈值，只要收到了 90% 的节点的回应，就判定为已经送达全网。</span></p><p><span>这个方法是可行的，它没有消耗无穷大的电力，但是显然它比第一种方法浪费的能量多，上图所示的实验，由于实在等不下去了，中断了实验，仅仅传播了不到一半的节点，回应节点有三分之一左右，也消耗 112360 点电力。如果要彻底完成，可能耗电量会多一到两个量级，这是难以接受的。</span></p><p><span>所以需要改进一下</span></p><h4><a name="232-改进1使用最常用路径" class="md-header-anchor"></a><span>2.3.2 改进1：使用最常用路径</span></h4><p><span>上一个方案解决了广播风暴无法停止的问题，但是耗电量仍然惊人。如果分析这些节点打出的收发消息的日志，很容易能够发现一个问题。上一个方案中，我们使用在转发的消息中带上自己的id，以避免自己重复转发自己转发过的消息，也就是 </span><strong><span>避免转发链成环</span></strong><span> 。但是只要稍微多想一步就能发现，即使不会成环，也会走很多弯路。举个例子：</span></p><p><img src="./images/draf1.png" referrerpolicy="no-referrer" alt="draf1"></p><p><span>在下面这两个草图中，上一个方案明显更接近左边草图所示的情况，所有转发链都没有成环，但是有大量没有意义的转发链。最好的方案应该是类似左侧，消息沿着一个生成树传播。</span></p><p><span>但是由于节点都是孤立的，节点不知道其它节点的位置，所以自然也不知道这样一棵树是怎样的。但是，节点可以根据接收到的消息，猜测网络的状态。每一个消息都带有沿途每一个节点的 ID （因为每个节点转发之前会在消息中加上自己 ID ）。所以如果统计收到的这些消息，可以发现某一些路径出现的概率比其它更高，依靠这些信息可以设计一个转发策略。</span></p><p><span>实际操作上，因为一个节点没法决定它前面的路径，只能影响它后面的路径。而且前面很多跳之外的路径其实也很难参考，统计起来开销也很大。所以每个节点只统计一个消息的源头和直接前驱节点。比如，一个消息通过 </span><code>A -&gt; B -&gt; C -&gt;</code><span> 传到 D 手里，那么 D 就记录 </span><code>&#39;A -&gt; ... -&gt; C&#39; += 1</code><span> 就不关注 A 和 C 之间的路径。当一个消息来，节点检查其是否是从相同源的所有路径中最常用的路径传过来的，如果是就转发一次，否则丢弃。这样做的理由就是，一个最常用的路径一般意味着最大的传输成功率，所以通过转发激励这条路径的发展，阻止其它低效的路径的发展。这样调整之后效果如下</span></p><p><img src="./images/2.3.2.gif" referrerpolicy="no-referrer" alt="2.3.2"></p><p><strong><span>上图是一个 GIF 图片，如果不能播放，可以访问 </span><a href='https://oss.keybrl.com/wsn-dds/images/2.3.2.gif'><span>https://oss.keybrl.com/wsn-dds/images/2.3.2.gif</span></a></strong></p><p><span>可以看出来，传播速率依然很快。但是更加高效、节能，上图所示过程花费了 19059 点电力。图中橙色的线表示以消息源为起点的最常用路径。</span></p><p><span>上图中只演示了消息发送，但是我们知道消息源还必须收到节点们的回应才能停止。但是我们没有将回应消息和普通消息一样处理，我们使用了不一样的处理逻辑。</span></p><h4><a name="233-改进2回应原路返回--逐级确认" class="md-header-anchor"></a><span>2.3.3 改进2：回应原路返回 + 逐级确认</span></h4><p><span>我们没有使用和发出消息一样的方法来发回回应。理由很简单，因为上一种改进中使用的发出消息的方法更适合于一对多，但是 </span><strong><span>消息的回应是一对一的</span></strong><span> ，只需要消息源收到回应即可。一对一的消息如果也要传播至整个网络，花销就太大了点，上一节的演示花费了 17747 点电力，如果回传也用这种方法，那 300 个节点也许需要 50 万点电力。</span></p><p><span>所以我们使用另一种方法，就是原路返回。因为在消息发出过程中，网络中已经产生了一个类似生成树的结构，所以消息送达路径也许就是比较好的路径，那回应也就原路返回就好了。</span></p><p><span>那如何原路返回呢？我们把消息中记录的路径反转过来，写在回应包中，比如一个消息通过 </span><code>A -&gt; B -&gt; C -&gt;</code><span> 传达 D ，那么 D 的回应消息中就写下 </span><code>D -&gt; C -&gt; B -&gt; A</code><span> 。D 将它广播出去，如果 C 收到了， C 发现自己 ID 在回应包路径第二位，所以 C 将自己 ID 删除，转发一次 </span><code>D -&gt; B -&gt; A</code><span> 随后是 B ， A ，沿途节点逐一删除自己的名字然后转发一次。这样这个回应消息最终会传达到源头。过程基本上类似于传出过程的逆过程。</span></p><p><span>但是回应也有可能会在路途中被丢掉，所以需要一些重发机制。一种方法是每次收到消息就发一个对应的回应，但是一个消息送达就已经很艰难了，回程有和去程一样的失败率，所以最终成功率是单程成功率的平方。就需要非常非常多次重复才能成功。</span></p><p><span>所以我们换一个思路，既然我们都知道回程的路线了，所以我们为什么不设计一种回程的逐级确认的机制呢？如果一个节点要回应，它就不停重发回应，直到收到下一个节点的确认，然后重发的职责就交给了下一个节点。</span></p><p><span>具体操作是这样的，如果一个节点要回应，那么它就不停重发回应。直到它发现有另一个节点在转发它的回应（这说明回应已经传达到了下一级）。那么此时它就停止重发。中间逐级的发送和确认都是一样的方法。</span></p><p><span>在改进1的基础上加上改进2的效果如下：</span></p><p><img src="./images/2.3.3.gif" referrerpolicy="no-referrer" alt="2.3.3"></p><p><strong><span>上图是一个 GIF 图片，如果不能播放，可以访问 </span><a href='https://oss.keybrl.com/wsn-dds/images/2.3.3.gif'><span>https://oss.keybrl.com/wsn-dds/images/2.3.3.gif</span></a></strong></p><p><span>图中增加了一些蓝色节点，蓝色节点是正在发送回应消息的节点。可以看出一些边缘节点收到消息后逐渐将回应消息的发送职责交给了靠近源的节点，蓝色节点收缩的发展情况类似于橙色节点扩散时的逆过程。</span></p><p><span>以上全过程共消耗电力 48017 点，平均一个节点经历了数百次发送，比该方案未经改进过的情况耗电少了几个数量级。</span></p><h3><a name="23-高阶要求" class="md-header-anchor"></a><span>2.3 高阶要求</span></h3><blockquote><p><span>⾼阶要求：在考虑电量的情况下，提出⼀种最优的数据分发策略</span></p></blockquote><p><span>由于我们能力实在有限，实在是不能设计出一种 </span><strong><span>“最优”</span></strong><span> 的数据分发策略。</span></p><p><span>...</span></p><p><span>在思考上一节的两个改进的过程中，我们觉得我们的设计中已经包含了一些“较优”的思想。避免丢包只能通过重传，要知道重传何时停止就只能够通过消息确认。消息发出时，因为对网络情况一无所知，所以稍微粗放一点，但是在过程中产生节点对于网络状态的理解。回传确认的时候就通过一个已知的较好路径，并且尽量利用已知信息（比如回程路径）增加节点对于传输结果的把握，减少重发次数。</span></p><p><span>但是要如何做到“最优”，我们实在是没有什么思路，因为虽然我们处于上帝视角可以很容易规划出一个“最优路径”。但是作为网络中对网络一无所知的节点，只能通过大量的摸索，建立对网络的认识。这个摸索的方法是否最优是很难判断的，因为我们甚至不知道一个“最优”的探索方法会具有怎样的指标或者模式。探索之后节点就会产生一些对网络的认识，可以利用这些认识减少无意义的工作。很显然，节点获得的信息越多，就能够越高效，但是探索网络和交流对网络的认知是需要额外开销的，在这两方面如何能够达到一个“最优”的平衡也是未知的。</span></p><p><span>因为我们对于“最优”缺少认识，所以自然也不能给出最优的设计。</span></p><h2><a name="3-实验总结" class="md-header-anchor"></a><span>3. 实验总结</span></h2><p><span>通过这个课程实验，我们除了了解了 Python 的科学计算和数据可视化工具 numpy 和 matplotlib ，丰富了我程序设计经验。更重要的，还加深了我们对于无限传感网络的认识。</span></p><p><span>在一个无限传感网络中，每个节点是孤立的、无知的，被随机地放置在网络中。但是不代表它们不能协同工作，其核心就是网络通信。通过网络，节点之间可以共享信息，使得每一个节点都对网络整体有一部分认识。通过这些认知，节点的行为能够变得越发高效。而如何设计这种协同行为是十分有挑战的。</span></p></div>
+</body>
+</html>

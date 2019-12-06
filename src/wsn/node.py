@@ -206,6 +206,7 @@ class WsnNode(object):
             self.send(self.sending)
 
         # 处理收到的各种消息
+        recv_set = set()
         while self.recv_queue:
             message = self.recv_queue.pop(0)
             # 自己发送的或者处理过的消息丢弃
@@ -214,17 +215,20 @@ class WsnNode(object):
                     self.replied_nodes.add(message.handlers[0])
                 continue
 
-            if not message.is_reply:
-                self.recv_count += 1
-                self.logger.info(f'{node_tag}接收到消息 "{message.data}"')
+            if f'{message.uuid}-{message.handlers[0]}-{message.handlers[-1]}' not in recv_set:
+                recv_set.add(f'{message.uuid}-{message.handlers[0]}-{message.handlers[-1]}')
 
-            # 给消息注册上自己名字，转发之
-            message.register(self.node_id)
-            self.send(message)
+                if not message.is_reply:
+                    self.recv_count += 1
+                    self.logger.info(f'{node_tag}接收到消息 "{message.data}"')
 
-            # 如果消息不是一个回应，则同时发送一条对该消息的回应
-            if not message.is_reply:
-                self.send(NormalMessage(uuid=message.uuid, is_reply=True, data=message.data, source=self.node_id))
+                # 给消息注册上自己名字，转发之
+                message.register(self.node_id)
+                self.send(message)
+
+                # 如果消息不是一个回应，则同时发送一条对该消息的回应
+                if not message.is_reply:
+                    self.send(NormalMessage(uuid=message.uuid, is_reply=True, data=message.data, source=self.node_id))
 
     def action2(self) -> Optional[bool]:
         """要求回应，最常用路径，原路回应
@@ -254,7 +258,7 @@ class WsnNode(object):
         if self.sending is not None:
             self.send(self.sending)
         for i, reply in self.reply_queue.items():
-            for _ in range(10):
+            for _ in range(1):
                 self.send(reply)
 
         # 处理收到的各种消息
@@ -262,8 +266,7 @@ class WsnNode(object):
             message = self.recv_queue.pop(0)
 
             if message.is_reply:
-                if len(message.handlers) < 2:
-                    continue
+
                 self.logger.info(f'{node_tag}接收到消息 "{message.data}" {message.handlers}')
                 if self.reply_queue.get(f'{message.uuid}-{message.handlers[0]}') is not None and \
                         len(
@@ -271,13 +274,20 @@ class WsnNode(object):
                         ) > len(message.handlers):
                     self.reply_queue.pop(f'{message.uuid}-{message.handlers[0]}')
                     continue
+
+                if len(message.handlers) < 2:
+                    continue
+
                 if self.node_id != message.handlers[1]:
                     continue
+
                 message.handlers.pop(1)
                 self.send(message)
+
                 if self.sending is not None and not self.sending.is_reply and message.uuid == self.sending.uuid:
                     self.replied_nodes.add(message.handlers[0])
                     continue
+
                 if f'{message.uuid}-{message.handlers[0]}' not in self.replied_messages:
                     self.replied_messages.add(f'{message.uuid}-{message.handlers[0]}')
                     self.reply_queue[f'{message.uuid}-{message.handlers[0]}'] = message
@@ -303,12 +313,12 @@ class WsnNode(object):
                     message.register(self.node_id)
                     self.send(message)
 
-                    # # 没回复过的消息回应以下
-                    # if message.uuid not in self.replied_messages:
-                    #     message.is_reply = True
-                    #     message.handlers = message.handlers[::-1]
-                    #     self.replied_messages.add(message.uuid)
-                    #     self.reply_queue[f'{message.uuid}-{message.handlers[0]}'] = message
+                    # 没回复过的消息回应以下
+                    if message.uuid not in self.replied_messages:
+                        message.is_reply = True
+                        message.handlers = message.handlers[::-1]
+                        self.replied_messages.add(message.uuid)
+                        self.reply_queue[f'{message.uuid}-{message.handlers[0]}'] = message
 
     def action3(self):
         """节点一次活动（方案二）
