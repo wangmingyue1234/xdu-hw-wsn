@@ -1,5 +1,4 @@
-/venv/
-/venv-wsl/
-/.idea/
+venv/
+.idea/
 log/
 *.pyc
